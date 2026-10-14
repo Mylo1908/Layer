@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {MODEL_KEYS,readResources,validateResources} from '../src/model-resources';
+const base='https://mylo1908.github.io/Layer/models/';
+const manifest=JSON.parse(await readFile('public/models/resources.json','utf8'));
+test('Die lokale Dateiliste enthält Modell, WASM und Modul; alle Chunks existieren',async()=>{const map=validateResources(manifest,base);for(const key of MODEL_KEYS)for(const c of map[key].chunks){const data=await readFile('public/models/'+c.name);assert.equal(data.length,c.offsets[1]-c.offsets[0]);}});
+test('Fehlende Dateiliste liefert einen verständlichen Fehler mit HTTP-Status',async()=>{await assert.rejects(readResources(base,(async()=>new Response('404',{status:404})) as typeof fetch),/HTTP 404/);});
+test('Fehlerhaftes JSON wird erkannt statt an die KI weitergegeben',async()=>{await assert.rejects(readResources(base,(async()=>new Response('<html>404</html>')) as typeof fetch),/gültiges JSON/);});
+test('Ein fehlendes Modell, Lücken im Datenbereich und fremde Hosts werden abgelehnt',()=>{let map=structuredClone(manifest);delete map[MODEL_KEYS[0]];assert.throws(()=>validateResources(map,base));map=structuredClone(manifest);map[MODEL_KEYS[0]].chunks[0].offsets[0]=1;assert.throws(()=>validateResources(map,base));map=structuredClone(manifest);map[MODEL_KEYS[0]].chunks[0].name='https://remote.example/photo';assert.throws(()=>validateResources(map,base));});

@@ -1,0 +1,16 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+async function workerHarness(){const handlers:Record<string,(e:any)=>void>={},stores=new Map<string,Map<string,Response>>();let failNetwork=false,failWrite=false;const key=(r:any)=>new URL(typeof r==='string'?r:r.url??r.href,'https://example.github.io/layer/').href;
+ const caches={keys:async()=>[...stores.keys()],delete:async(k:string)=>stores.delete(k),open:async(name:string)=>{const m=stores.get(name)??new Map();stores.set(name,m);return {match:async(r:any)=>m.get(key(r))?.clone(),put:async(r:any,v:Response)=>{if(failWrite)throw Error('quota');m.set(key(r),v.clone());},addAll:async(rs:string[])=>{for(const r of rs)m.set(key(r),new Response('cached:'+r));}};}};
+ const source=(await readFile('public/sw.js','utf8')).replace('__VERSION__','test').replace('/*__PRECACHE__*/[]','["./index.html","./assets/main.js"]');vm.runInNewContext(source,{self:{location:{origin:'https://example.github.io'},registration:{scope:'https://example.github.io/layer/'},clients:{claim:async()=>{}},addEventListener:(n:string,fn:any)=>handlers[n]=fn,skipWaiting:()=>{}},caches,URL,fetch:async()=>{if(failNetwork)throw Error('offline');return new Response('network');}});
+ await new Promise<void>((resolve,reject)=>handlers.install({waitUntil:(p:Promise<void>)=>p.then(resolve,reject)}));
+ return {stores,caches,setOffline:()=>{failNetwork=true;},setFull:()=>{failWrite=true;},request:async(url:string,mode='cors')=>{let result:Promise<Response>|undefined;handlers.fetch({request:{url,method:'GET',mode},respondWith:(p:Promise<Response>)=>result=p});return result;}};
+}
+test('Offline-Navigation findet index.html auch unter GitHub-Repository-Pfad',async()=>{const h=await workerHarness();h.setOffline();const r=await h.request('https://example.github.io/layer/','navigate');assert.equal(await r!.text(),'cached:./index.html');});
+test('App-Dateien kommen cache-first ohne Netzwerk',async()=>{const h=await workerHarness();h.setOffline();const r=await h.request('https://example.github.io/layer/assets/main.js');assert.equal(await r!.text(),'cached:./assets/main.js');});
+test('Modell-Dateien landen separat im Offline-Cache',async()=>{const h=await workerHarness();await h.request('https://example.github.io/layer/models/chunk');assert.ok(h.stores.get('layer-models-v1')!.has('https://example.github.io/layer/models/chunk'));h.setOffline();const r=await h.request('https://example.github.io/layer/models/chunk');assert.equal(await r!.text(),'network');});
+test('Voller Cache verhindert nicht die Nutzung eines erfolgreichen Downloads',async()=>{const h=await workerHarness();h.setFull();const r=await h.request('https://example.github.io/layer/models/new');assert.equal(await r!.text(),'network');});
+test('Externe Requests werden nicht abgefangen',async()=>{const h=await workerHarness();assert.equal(await h.request('https://other.example.com/image'),undefined);});
+test('Navigation lädt online neue HTML-Versionen statt einer alten Cache-Seite',async()=>{const h=await workerHarness();const r=await h.request('https://example.github.io/layer/index.html','navigate');assert.equal(await r!.text(),'network');});

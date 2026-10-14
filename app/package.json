@@ -1,0 +1,29 @@
+{
+  "name": "layer-wardrobe",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "dev": "node scripts/prepare-models.mjs && vite --host 0.0.0.0",
+    "build": "node scripts/prepare-models.mjs && node scripts/prepare-source.mjs && node scripts/clean-dist.mjs && tsc -b && vite build && node scripts/precache.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node scripts/prepare-models.mjs && node --import tsx --test tests/*.test.ts",
+    "models": "node scripts/download-models.mjs"
+  },
+  "dependencies": {
+    "@imgly/background-removal": "1.7.0",
+    "idb": "8.0.3",
+    "lucide-react": "0.468.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.13",
+    "@types/react-dom": "19.1.9",
+    "fake-indexeddb": "6.2.4",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vite": "7.1.12"
+  }
+}

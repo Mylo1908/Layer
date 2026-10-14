@@ -1,0 +1,156 @@
+<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Layer — Einrichtung</title><style>body{font:16px/1.65 system-ui,sans-serif;margin:auto;max-width:850px;padding:30px 24px 70px;background:#f5f3ee;color:#303a2e}main{white-space:pre-wrap}h1{font:44px Georgia,serif;margin:0}h2{font:29px Georgia,serif;margin:15px 0 0;color:#506647}a{color:#506647;overflow-wrap:anywhere}code{background:#e6eadf;padding:2px 5px;border-radius:4px}strong{color:#324d2c}</style><main><h1>In wenigen Schritten auf dein iPhone</h1>
+
+<h2>1. ZIP auf deinem Windows-Laptop entpacken</h2>
+
+Rechtsklick auf <code>Layer-PWA.zip</code> → <strong>Alle extrahieren</strong>. Öffne den entpackten
+Projektordner. In <code>dist</code> ist die <strong>fertige Website</strong>, inklusive KI-Modell und
+aller Offline-Dateien. <code>index.html</code> per Doppelklick zu öffnen reicht für eine
+PWA nicht: Sie benötigt einen Webserver und für das iPhone HTTPS.
+
+Für diese schnelle Installation brauchst du weder Node.js noch Android Studio.
+
+<h2>2. Kostenloses HTTPS über GitHub Pages</h2>
+
+Stand 14.10.2026: GitHub Pages ist bei <strong>GitHub Free für öffentliche Repositories</strong>
+verfügbar. Die kostenlose <code>github.io</code>-Adresse unterstützt HTTPS. Keine eigene
+Domain und kein bezahlter Plan erforderlich. Ein kostenloses GitHub-Konto ist
+nur für die Veröffentlichung erforderlich; die App selbst verlangt kein Konto.
+
+1. Öffne <a href="https://github.com/">https://github.com/</a> und melde dich mit einem kostenlosen Konto an.
+2. Wähle <strong>New repository</strong>. Name beispielsweise <strong>layer</strong>.
+3. Wähle <strong>Public</strong>. Kein Upgrade, keine Testphase und kein Private-Repository wählen.
+4. Aktiviere <strong>Add a README file</strong> und klicke <strong>Create repository</strong>.
+5. Im Repository: <strong>Add file → Upload files</strong>.
+6. Öffne auf Windows den Ordner <strong><code>dist</code></strong>. Markiere dessen <strong>gesamten Inhalt</strong>,
+   also <code>index.html</code>, <code>assets</code>, <code>models</code>, <code>icons</code>, <code>manifest.webmanifest</code>, <code>sw.js</code>,
+   <code>source.zip</code>, <code>licenses</code> und <code>.nojekyll</code>, und ziehe ihn in die Upload-Fläche.
+   Lade die Ordner mit ihren Unterordnern hoch; ihre Struktur muss erhalten bleiben.
+   <strong>Nicht den äußeren Projektordner und nicht den Ordner <code>dist</code> selbst hochladen.</strong>
+7. Warte auf alle Uploads und klicke <strong>Commit changes</strong>, direkt auf <code>main</code>.
+8. Öffne <strong>Settings → Pages</strong>.
+9. Unter <strong>Build and deployment → Source</strong> wähle <strong>Deploy from a branch</strong>.
+10. Unter <strong>Branch</strong> wähle <strong>main</strong> und <strong>/(root)</strong>. Klicke <strong>Save</strong>.
+11. Nach der Veröffentlichung erscheint dort die tatsächliche Website-Adresse,
+    typischerweise <code>https://DEINNAME.github.io/layer/</code>. Öffne <strong>Visit site</strong>.
+12. Nutze HTTPS; <strong>Enforce HTTPS</strong> ist bei der <code>github.io</code>-Adresse normalerweise aktiv.
+
+Die KI-Dateien sind in kleine Dateien aufgeteilt. Alle Upload-Dateien bleiben unter
+GitHubs Browser-Grenze von 25 MiB pro Datei; es sind weniger als 100 Dateien.
+Die Website bleibt weit unter dem Pages-Limit von 1 GB.
+
+Veröffentlicht werden <strong>nur App-Code und allgemeine KI-Dateien</strong>. Deine Kleidung,
+Outfits und Backups gehören <strong>nicht</strong> in dieses öffentliche Repository. Sie
+entstehen erst auf deinem Gerät und werden von der App nicht übertragen.
+
+Offizielle Quellen:
+
+- Kostenloser Plan / Pages-Limits: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits</a>
+- HTTPS: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https">https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https</a>
+- Uploads: <a href="https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository">https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository</a>
+
+<h2>3. Auf deinem iPhone installieren</h2>
+
+1. Öffne die <strong>veröffentlichte HTTPS-Adresse in Safari</strong> auf deinem iPhone.
+2. Warte, bis die App geladen ist und unten <strong>Offline bereit</strong> steht.
+3. Tippe auf <strong>Teilen</strong>, ggf. zunächst auf das Menü mit den drei Punkten / <strong>Mehr</strong>.
+4. Scrolle zu <strong>Zum Home-Bildschirm</strong>.
+5. Falls angezeigt: <strong>Als Web-App öffnen</strong> aktivieren.
+6. Name <strong>Layer</strong> lassen, dann <strong>Hinzufügen</strong>.
+7. Öffne ab jetzt das <strong>Layer-Icon auf deinem Home-Bildschirm</strong>.
+8. In Layer: <strong>Einstellungen → KI offline vorbereiten</strong>. Im WLAN warten, bis
+   „KI-Dateien sind offline gespeichert“ erscheint (ca. 56 MB).
+9. Optional <strong>Beständigen Speicher anfragen</strong> antippen. Safari entscheidet darüber.
+
+Apple-Anleitung: <a href="https://support.apple.com/guide/iphone/bookmark-a-website-iph42ab2f3a7/ios">https://support.apple.com/guide/iphone/bookmark-a-website-iph42ab2f3a7/ios</a>
+
+<h2>4. Deine ersten Kleidungsstücke</h2>
+
+1. <strong>Kleidung hinzufügen</strong> oder das Plus unten antippen.
+2. <strong>Fotografieren</strong>: iPhone-Kamera wählen. Oder <strong>Foto wählen</strong> für die Fotomediathek.
+3. Kleidung flach hinlegen, komplett abbilden, gut beleuchten.
+4. Das Bild wird lokal verkleinert und automatisch mit KI freigestellt.
+5. Bei Bedarf <strong>Radieren</strong> oder <strong>Zurückmalen</strong> und die Pinselgröße nutzen.
+6. Für ruhige, einfarbige Hintergründe ist <strong>Einfach</strong> mit Toleranzregler eine
+   schnellere Alternative. <strong>Original</strong> setzt die Freistellung zurück.
+7. Gib einen Namen ein. „Weißes Longsleeve“ oder „Strickpullover“ schlägt eine
+   Kategorie vor. Die Kategorie kannst du jederzeit selbst wählen.
+8. Farbe, Saison, Notizen ergänzen und <strong>Stück speichern</strong>.
+
+<h2>5. Longsleeve unter Strickpullover</h2>
+
+1. Beide Teile vorher fotografieren und speichern.
+2. <strong>Outfits → Outfit erstellen</strong> öffnen.
+3. <strong>Hinzufügen</strong> → Longsleeve wählen.
+4. Noch einmal <strong>Hinzufügen</strong> → Pullover wählen.
+5. In der Ebenenliste steht der Pullover <strong>über dem Longsleeve</strong>. Bei Bedarf
+   auswählen und <strong>Vor</strong> oder <strong>Zurück</strong> antippen.
+6. Longsleeve auswählen und ein Stück nach unten ziehen. Falls nötig größer machen.
+7. Pullover darüber platzieren und etwas kleiner machen. So bleibt der Saum
+   des Longsleeves im Gürtelbereich sichtbar.
+8. Ein Finger verschiebt; zwei Finger auf demselben Stück vergrößern/verkleinern
+   und drehen. Regler und Pfeile ermöglichen kleine, genaue Änderungen.
+9. Weitere Teile ergänzen. Es gibt keine Beschränkung auf ein Oberteil.
+10. Outfitnamen eingeben und <strong>Outfit speichern</strong>. In der Übersicht wieder öffnen,
+    weiter bearbeiten oder als PNG exportieren.
+
+Das ist eine frei gestaltbare Collage deiner Kleidung, keine Simulation von
+Stoffverhalten. Wie viel vom Longsleeve sichtbar ist, bestimmst du mit Position
+und Größe der zwei freigestellten Bilder.
+
+<h2>6. Offline und Backups</h2>
+
+Teste nach der Einrichtung: Flugmodus einschalten, Layer schließen und erneut
+über das Home-Bildschirm-Icon öffnen. Öffne deinen Schrank, ändere ein Outfit
+und speichere es. Mit vorbereiteten KI-Dateien kannst du auch offline freistellen.
+
+Vor vielen neuen Fotos und regelmäßig danach:
+<strong>Einstellungen → Backup exportieren → in „Dateien“ sichern</strong>.
+Ein Backup enthält alle Original- und bearbeiteten Bilder sowie die Outfits.
+Mit <strong>Importieren</strong> kannst du es auf einem anderen Gerät wieder einlesen.
+Gleiche IDs werden ersetzt, andere bestehende Einträge bleiben erhalten.
+
+Die App synchronisiert nicht automatisch. Browserdaten löschen, Speicherbereinigung
+oder ein Gerätewechsel können die lokale Sammlung entfernen. Website-Speicher
+ist grundsätzlich begrenzt und ohne Backups keine dauerhafte Garantie.
+Siehe <a href="https://webkit.org/blog/14403/updates-to-storage-policy/">https://webkit.org/blog/14403/updates-to-storage-policy/</a>.
+
+<h2>7. Häufige Probleme</h2>
+
+<strong>Leere Seite / 404:</strong> Prüfe, dass <code>index.html</code> im Repository ganz oben liegt und
+nicht in einem Ordner <code>dist</code>. Unter Pages müssen <code>main</code> und <code>/(root)</code> ausgewählt sein.
+
+<strong>KI-Dateien fehlen:</strong> Den gesamten Ordner <code>models</code> mit allen Dateien hochladen.
+Der Build enthält keine Remote-API-Ausweichlösung; fehlende Dateien müssen ergänzt werden.
+
+<strong>KI langsam / fehlgeschlagen:</strong> Aktuelles iOS verwenden, andere speicherintensive
+Apps schließen und Kleidung auf ruhigem Hintergrund fotografieren. Alternativ
+„Einfach“ und den Pinsel nutzen. Arbeitsspeicher und Fotoqualität begrenzen die KI.
+
+<strong>Neue Version wird nicht sichtbar:</strong> App schließen, ebenso alle Safari-Tabs mit
+Layer. Dann erneut öffnen; offline gespeicherte Versionen wechseln erst nach dem
+Schließen der alten Fenster. Vor einer manuellen Bereinigung unbedingt Backup erstellen.
+
+<strong>Offline geht nicht:</strong> Erst im WLAN vollständig laden, auf „Offline bereit“ warten,
+die KI-Dateien separat speichern und anschließend erneut testen. Nicht im Privatmodus verwenden.
+
+<strong>Schrank im Safari-Tab anders als im Home-Icon:</strong> Möglich bei unterschiedlichen
+Speicherbereichen. Backup im bisherigen Bereich exportieren und im Zielbereich importieren.
+
+<strong>Windows möchte npm.ps1 ausführen:</strong> Benutze die mitgelieferten <code>.cmd</code>-Dateien
+oder die Eingabeaufforderung <code>cmd</code>, statt die PowerShell-Ausführungsrichtlinie zu ändern.
+
+<h2>8. Später den Code ändern</h2>
+
+Lies <code>README.md</code>. Node.js LTS kostenlos installieren, <code>Windows_Start.cmd</code> öffnen,
+Quellcode in <code>src</code> bearbeiten. <code>Windows_Build.cmd</code> erzeugt eine neue <code>dist</code>-Version
+mit aktuellem Quellcode-Download. Lade dessen Inhalt anschließend wieder in
+dein GitHub-Repository hoch. Website-Adresse gleich lassen, damit lokale Daten
+unter derselben Herkunft erreichbar bleiben.
+
+Die KI-Modell-Dateien liegen im Lieferpaket platzsparend nur in <code>dist/models</code>.
+Der erste Entwicklungsstart/Build übernimmt sie automatisch nach <code>public/models</code>.
+
+Die Preise und Limits wurden am 14.10.2026 offiziell geprüft. Es gibt in dieser
+App keine Funktion, die später zwangsläufig ein kostenpflichtiges Abo oder eine
+bezahlte API benötigt. Anbieterbedingungen für kostenloses Hosting können sich
+in Zukunft ändern; die App und ihre Daten bleiben exportierbar.</main></html>
