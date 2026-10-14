@@ -1,0 +1,7 @@
+const VERSION='baf20571c2ec';
+const SHELL='layer-shell-'+VERSION,MODELS='layer-models-v1';
+const FILES=["./assets/cutout.worker-BEUUq2NO.js","./assets/index-DQsr7uKh.js","./assets/index-ksIaP64B.css","./assets/ort.wasm.bundle.min--hGdZCrc.js","./assets/ort.wasm.bundle.min-BHusxC6p.mjs","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./index.html","./licenses/DIS-LICENSE.md","./licenses/IMG_LY_ThirdPartyLicenses.json","./licenses/THIRD_PARTY_LICENSES.txt","./manifest.webmanifest","./source.zip"];
+self.addEventListener('install',event=>{event.waitUntil(caches.open(SHELL).then(c=>c.addAll(FILES)));});
+self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('layer-shell-')&&k!==SHELL).map(k=>caches.delete(k)));await self.clients.claim();})());});
+self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting();});
+self.addEventListener('fetch',event=>{const req=event.request,url=new URL(req.url);if(req.method!=='GET'||url.origin!==self.location.origin)return;const model=url.pathname.includes('/models/');event.respondWith((async()=>{const c=await caches.open(model?MODELS:SHELL);const cached=await c.match(req);if(cached)return cached;try{const response=await fetch(req);if(response.ok)await c.put(req,response.clone()).catch(()=>{});return response;}catch(e){if(req.mode==='navigate'){const index=await c.match(new URL('./index.html',self.registration.scope));if(index)return index;}throw e;}})());});
