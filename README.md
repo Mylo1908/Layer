@@ -4,9 +4,11 @@ Dein lokaler digitaler Kleiderschrank: fotografieren, automatisch mit KI freiste
 
 **App öffnen:** https://mylo1908.github.io/Layer/
 
-Neue Fotos werden automatisch verarbeitet. Nach dem KI-Fortschritt erscheint die freigestellte Vorschau; anschließend Name/Kategorie ergänzen und speichern. Kleine isolierte Hintergrundreste werden automatisch entfernt. Die manuellen Werkzeuge sind optional.
+ChatGPT Prettify ist der Hauptablauf: Foto wählen → Analyseauftrag mit Foto manuell in ChatGPT senden → JSON-Antwort übernehmen → individuellen Bildauftrag im selben Chat senden → neues transparentes KI-PNG importieren und speichern. Neue Stücke lassen sich erst nach dem Ergebnisimport speichern. Name, Kategorie und Farbe werden aus der Analyse vorgeschlagen.
 
-Die KI läuft lokal im Browser. Es gibt keine Foto-Uploads, API-Schlüssel oder bezahlten KI-Dienste. Ergebnisse hängen vom Foto und vom Gerät ab.
+Referenzfoto und Produktbild bleiben getrennt. Der Kleiderschrank und die Outfits nutzen das Produktbild. Entwürfe bleiben lokal in IndexedDB erhalten, auch nach dem Wechsel zu ChatGPT oder Neuladen. Nach Rückkehr „Kleidung hinzufügen“ öffnen.
+
+Für automatische KI-Neuerstellung sind Client und privater Node-Server vorbereitet; Hosting und API-Zugang müssen noch eingerichtet werden. Fotos werden dann an den eigenen Server und OpenAI übertragen, API-Kosten fallen separat an. Anleitung: [app/server/README.md](app/server/README.md). Die Serveroberfläche ist für den manuellen Hauptablauf ausgeblendet. Ergebnisse bitte auf Abweichungen prüfen.
 
 - `app/`: vollständiger React-/TypeScript-Quellcode, Tests, Windows-Anleitungen und Build-Skripte.
 - `models/`: vollständige KI-Modell-/WASM-Dateien am erwarteten App-Pfad.
@@ -17,6 +19,6 @@ Entwicklung: im Ordner `app` mit Node.js LTS `npm ci`, `npm run dev`, `npm test`
 
 Neue Versionen: App und alle Safari-Tabs mit Layer schließen und neu öffnen. Wenn „App aktualisieren“ erscheint, antippen. Die lokal gespeicherte Sammlung wird dadurch nicht gelöscht. Regelmäßig Backups exportieren.
 
-Validierung: 25 automatisierte Tests, TypeScript-/Produktions-Build und vollständige lokale Worker-Bildverarbeitung mit echtem IS-Net/WASM bestanden. Kein Test auf einem echten iPhone; Kamera, Touch und Installation dort beim ersten Gebrauch prüfen.
+Validierung dieser Änderung: 29 automatisierte Tests inklusive Server-Zugang und Tageslimit mit simuliertem Bildanbieter; TypeScript-/Produktions-Build. Echte API-Bildgenerierung ist noch nicht getestet. Kein Test auf einem echten iPhone; Kamera, Touch und Installation dort beim ersten Gebrauch prüfen.
 
 Projektlizenz: AGPL-3.0-or-later. Drittanbieterhinweise stehen in `licenses` und im Quellcode.
