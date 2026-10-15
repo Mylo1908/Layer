@@ -6,7 +6,9 @@ Dein lokaler digitaler Kleiderschrank: fotografieren, automatisch mit KI freiste
 
 Neue Fotos werden automatisch verarbeitet. Nach dem KI-Fortschritt erscheint die freigestellte Vorschau; anschließend Name/Kategorie ergänzen und speichern. Kleine isolierte Hintergrundreste werden automatisch entfernt. Die manuellen Werkzeuge sind optional.
 
-Die KI läuft lokal im Browser. Es gibt keine Foto-Uploads, API-Schlüssel oder bezahlten KI-Dienste. Ergebnisse hängen vom Foto und vom Gerät ab.
+Die lokale Freistellung läuft ohne Foto-Uploads im Browser. Neu: Im Fotoeditor lässt sich ein Foto mit passendem Auftrag manuell an ChatGPT übergeben und ein echtes transparentes KI-PNG importieren. Der Import verändert das Original nicht.
+
+Für automatische KI-Neuerstellung sind Client und privater Node-Server vorbereitet; Hosting und API-Zugang müssen noch eingerichtet werden. Fotos werden dann an den eigenen Server und OpenAI übertragen, API-Kosten fallen separat an. Anleitung: [app/server/README.md](app/server/README.md). Eine visuelle Kategorie-/Farbzuordnung ist noch nicht eingebaut. Ergebnisse bitte auf Abweichungen prüfen.
 
 - `app/`: vollständiger React-/TypeScript-Quellcode, Tests, Windows-Anleitungen und Build-Skripte.
 - `models/`: vollständige KI-Modell-/WASM-Dateien am erwarteten App-Pfad.
@@ -17,6 +19,6 @@ Entwicklung: im Ordner `app` mit Node.js LTS `npm ci`, `npm run dev`, `npm test`
 
 Neue Versionen: App und alle Safari-Tabs mit Layer schließen und neu öffnen. Wenn „App aktualisieren“ erscheint, antippen. Die lokal gespeicherte Sammlung wird dadurch nicht gelöscht. Regelmäßig Backups exportieren.
 
-Validierung: 25 automatisierte Tests, TypeScript-/Produktions-Build und vollständige lokale Worker-Bildverarbeitung mit echtem IS-Net/WASM bestanden. Kein Test auf einem echten iPhone; Kamera, Touch und Installation dort beim ersten Gebrauch prüfen.
+Validierung dieser Änderung: 27 automatisierte Tests inklusive Server-Zugang und Tageslimit mit simuliertem Bildanbieter; TypeScript-/Produktions-Build. Echte API-Bildgenerierung ist noch nicht getestet. Kein Test auf einem echten iPhone; Kamera, Touch und Installation dort beim ersten Gebrauch prüfen.
 
 Projektlizenz: AGPL-3.0-or-later. Drittanbieterhinweise stehen in `licenses` und im Quellcode.
