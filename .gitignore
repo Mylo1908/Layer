@@ -5,3 +5,5 @@ dist/
 .env.*
 app/public/models/
 app/public/source.zip
+
+.wrangler/

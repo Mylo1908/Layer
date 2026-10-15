@@ -22,3 +22,7 @@ Neue Versionen: App und alle Safari-Tabs mit Layer schließen und neu öffnen. W
 Validierung dieser Änderung: 29 automatisierte Tests inklusive Server-Zugang und Tageslimit mit simuliertem Bildanbieter; TypeScript-/Produktions-Build. Echte API-Bildgenerierung ist noch nicht getestet. Kein Test auf einem echten iPhone; Kamera, Touch und Installation dort beim ersten Gebrauch prüfen.
 
 Projektlizenz: AGPL-3.0-or-later. Drittanbieterhinweise stehen in `licenses` und im Quellcode.
+
+## Automatisches Prettify (vorbereitet)
+
+Die automatische Foto → Analyse → Bildgenerierung → Freistellung → Speicherung ist implementiert. Ein Cloudflare-Worker mit Workers-AI-Bindung liegt unter `app/cloudflare/`. Der echte Dienst ist noch nicht verbunden; `ai-config.json` bleibt bis zum Modelltest leer. Die Live-App verwendet solange weiterhin den funktionierenden ChatGPT-Import. Einmaliges Betreiber-Setup, Kontingent und Tests: [app/cloudflare/README.md](app/cloudflare/README.md). Keine API-Schlüssel für Endnutzer erforderlich.
