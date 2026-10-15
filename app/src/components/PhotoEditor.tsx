@@ -5,9 +5,19 @@ import {normalizePhoto,requireTransparency,cropTransparent,download} from '../im
 import {ANALYSIS_PROMPT,parseAnalysis,creationPrompt,type Analysis} from '../chat-workflow';
 import {readDraft,writeDraft,deleteDraft} from '../photo-draft';
 import {useModal} from '../modal';
+import {loadAutomaticEndpoint} from '../automatic-prettify';
+import {AutomaticPhotoEditor} from './AutomaticPhotoEditor';
 type Props={garment?:Garment;onClose:()=>void;onSave:(g:Garment)=>Promise<void>};
 function Photo({blob,label}:{blob?:Blob;label:string}){const [url,setUrl]=useState('');useEffect(()=>{if(!blob){setUrl('');return;}const u=URL.createObjectURL(blob);setUrl(u);return()=>URL.revokeObjectURL(u);},[blob]);return <figure className="workflow-preview"><figcaption>{label}</figcaption><div className="checker">{url?<img src={url} alt={label}/>:<span>Noch kein Bild</span>}</div></figure>;}
-export function PhotoEditor({garment,onClose,onSave}:Props){
+export function PhotoEditor(props:Props){
+ const [endpoint,setEndpoint]=useState<string|null>(null),[error,setError]=useState('');
+ useEffect(()=>{let active=true;loadAutomaticEndpoint().then(url=>{if(active)setEndpoint(url);}).catch(()=>{if(active){setEndpoint('');setError('Die automatische KI-Verbindung konnte nicht geladen werden.');}});return()=>{active=false;};},[]);
+ if(props.garment)return <ManualPhotoEditor {...props}/>;
+ if(endpoint===null)return <div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-label="KI-Verbindung laden"><p role="status">KI-Verbindung wird geladen …</p><button className="button secondary" onClick={props.onClose}>Schließen</button></section></div>;
+ if(endpoint)return <AutomaticPhotoEditor endpoint={endpoint} onClose={props.onClose} onSave={props.onSave}/>;
+ return <ManualPhotoEditor {...props} unavailable={error||'Automatisches Prettify ist vorbereitet, aber der KI-Dienst ist noch nicht verbunden. Bis zur Aktivierung funktioniert weiterhin der ChatGPT-Import.'}/>;
+}
+function ManualPhotoEditor({garment,onClose,onSave,unavailable}:Props&{unavailable?:string}){
  useModal();const draftId=garment?.id??'new';
  const [original,setOriginal]=useState(garment?.original),[result,setResult]=useState(garment?.processed),[analysis,setAnalysis]=useState<Analysis>(),[analysisText,setAnalysisText]=useState('');
  const [name,setName]=useState(garment?.name??''),[category,setCategory]=useState<Category>(garment?.category??'T-Shirts'),[color,setColor]=useState(garment?.color??'Neutral'),[season,setSeason]=useState(garment?.season??'Ganzjährig'),[notes,setNotes]=useState(garment?.notes??'');
@@ -22,6 +32,7 @@ export function PhotoEditor({garment,onClose,onSave}:Props){
  async function importImage(file?:File){if(!file)return;await run(async()=>{const b=await normalizePhoto(file);await requireTransparency(b);await cropTransparent(b);setResult(b);setImported(true);setNotice('KI-Bild übernommen. Dieses Bild wird im Kleiderschrank und in Outfits verwendet.');});}
  async function save(){await run(async()=>{if(!original||!result||!name.trim())throw Error('Bitte Foto, Namen und fertiges KI-Bild ergänzen.');if(!garment&&!imported)throw Error('Bitte zuerst dein neu erstelltes KI-Bild importieren.');saving.current=true;try{await queue.current;const image=await cropTransparent(result);await onSave({id:garment?.id??uid(),name:name.trim(),category,color,season,notes,favorite:garment?.favorite??false,image,original,processed:result,createdAt:garment?.createdAt??Date.now(),imageSource:imported?'chatgpt':garment?.imageSource});await deleteDraft(draftId);}catch(e){saving.current=false;throw e;}});}
  return <div className="modal-backdrop"><section className="modal photo-modal" role="dialog" aria-modal="true" aria-label="Kleidungsstück bearbeiten"><header className="modal-head"><div><span className="eyebrow">CHATGPT PRETTIFY</span><h2>Vom Foto zum KI-Produktbild</h2></div><button className="icon-button" disabled={busy||!ready} onClick={onClose} aria-label="Schließen"><X/></button></header>
+ {unavailable&&<p className="notice" role="status">{unavailable}</p>}
  <p className="workflow-intro">Foto → Analyse → individueller Bildauftrag → neues KI-Bild. Du wechselst dafür kurz zu ChatGPT. Layer übernimmt anschließend dein fertiges Produktbild.</p>
  <div className="photo-layout"><div><div className="workflow-previews"><Photo blob={original} label="Referenzfoto · bleibt als Original erhalten"/><Photo blob={result} label={imported?'KI-Produktbild · für Schrank & Outfits':'Produktbild · hier erscheint dein Ergebnis'}/></div>
  <section className="workflow-step"><h3>1 · Kleidungsstück fotografieren</h3><p>Ein einzelnes Stück, vollständig sichtbar und möglichst frontal. Das Foto dient der KI als Referenz.</p><div className="photo-actions"><label className="button primary"><Camera size={17}/> Fotografieren<input hidden type="file" accept="image/*" capture="environment" disabled={busy||!ready} onChange={e=>{void choose(e.target.files?.[0]);e.target.value='';}}/></label><label className="button secondary"><ImagePlus size={17}/> Referenzfoto wählen<input hidden type="file" accept="image/*" disabled={busy||!ready} onChange={e=>{void choose(e.target.files?.[0]);e.target.value='';}}/></label></div></section>
