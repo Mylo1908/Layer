@@ -1,4 +1,4 @@
-const VERSION='7fa10af163cf';
+const VERSION='40c6779e6488';
 const SHELL='layer-shell-'+VERSION,MODELS='layer-models-v1';
 const FILES=["./assets/cutout.worker-qdsiXTPA.js","./assets/index-D5CqnbtC.css","./assets/index-DufjFJxc.js","./assets/ort.wasm.bundle.min--hGdZCrc.js","./assets/ort.wasm.bundle.min-BHusxC6p.mjs","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./index.html","./licenses/DIS-LICENSE.md","./licenses/IMG_LY_ThirdPartyLicenses.json","./licenses/THIRD_PARTY_LICENSES.txt","./manifest.webmanifest","./source.zip"];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(SHELL).then(c=>c.addAll(FILES)));});
