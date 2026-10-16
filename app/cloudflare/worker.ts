@@ -57,7 +57,7 @@ export default {
    const answer=await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct',{prompt,image:Array.from(bytes),max_tokens:900,temperature:0.1});
    let data;try{data=decodeAnalysis(answer);}catch{return reply({error:'Die Bildanalyse hat kein vollständiges JSON geliefert. Bitte erneut versuchen.',code:'ANALYSIS_JSON',stage,analysisResponse:typeof answer?.response==='string'?answer.response.slice(0,6000):null,responseType:typeof answer?.response},502);}
    if(data?.suitable!==true)return reply({error:'Bitte ein einzelnes Kleidungsstück vollständig und deutlich fotografieren.'},422);
-   let analysis;try{analysis=parseAnalysis(JSON.stringify(data));}catch{return reply({error:'Die Bildanalyse enthält ungültige Kleidungsdaten. Bitte erneut versuchen.',code:'ANALYSIS_FIELDS',stage},502);}
+   let analysis;try{analysis=parseAnalysis(JSON.stringify(data));}catch{return reply({error:'Die Bildanalyse enthält ungültige Kleidungsdaten. Bitte erneut versuchen.',code:'ANALYSIS_FIELDS',stage,analysisResponse:JSON.stringify(data).slice(0,6000)},502);}
    const form=new FormData();
    form.append('prompt',`${analysis.imagePrompt.slice(0,5000)}\nCreate a NEW professional product photograph of the exact garment in input image 0. Preserve its cut, colors, pattern and visible prints. Entire garment centered, straight frontal flat lay, neat and gently smoothed, with generous clear margins. Plain contrasting light gray background for automatic background removal. No person, hands, mannequin, hanger, props, cast shadow, border or added text. Never draw a checkerboard.`);
    form.append('input_image_0',new Blob([bytes],{type:'image/png'}),'reference.png');form.append('width','1024');form.append('height','1024');
