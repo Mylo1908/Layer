@@ -55,7 +55,7 @@ export default {
    const view=new DataView(bytes.buffer);if(length<24||view.getUint32(16)>511||view.getUint32(20)>511)return reply({error:'Referenzfoto darf maximal 511 × 511 Pixel groß sein.'},400);
    stage='analysis';
    const answer=await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct',{prompt,image:Array.from(bytes),max_tokens:900,temperature:0.1});
-   let data;try{data=decodeAnalysis(answer);}catch{return reply({error:'Die Bildanalyse hat kein vollständiges JSON geliefert. Bitte erneut versuchen.',code:'ANALYSIS_JSON',stage},502);}
+   let data;try{data=decodeAnalysis(answer);}catch{return reply({error:'Die Bildanalyse hat kein vollständiges JSON geliefert. Bitte erneut versuchen.',code:'ANALYSIS_JSON',stage,analysisResponse:typeof answer?.response==='string'?answer.response.slice(0,6000):null,responseType:typeof answer?.response},502);}
    if(data?.suitable!==true)return reply({error:'Bitte ein einzelnes Kleidungsstück vollständig und deutlich fotografieren.'},422);
    let analysis;try{analysis=parseAnalysis(JSON.stringify(data));}catch{return reply({error:'Die Bildanalyse enthält ungültige Kleidungsdaten. Bitte erneut versuchen.',code:'ANALYSIS_FIELDS',stage},502);}
    const form=new FormData();
