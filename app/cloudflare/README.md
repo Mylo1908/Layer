@@ -58,3 +58,11 @@ Der echte Turnstile-Client lädt im Browser und zeigt bei Bedarf eine interaktiv
 ### Modellkorrektur nach echtem Turnstile-Test
 
 Der Betreiber hat die Menschprüfung erfolgreich abgeschlossen. Die Anfrage erreichte danach die KI-Verarbeitung und scheiterte mit `MODEL_UNAVAILABLE`; das Runtime-Secret und die erfolgreiche Siteverify-Prüfung sind damit nachgewiesen. Cloudflares offizielle Modellseite für `llama-3.1-8b-instruct` führt inzwischen zu `?unavailable=llama-3.1-8b-instruct`. Der JSON-Formatierer wurde deshalb auf das aktuell dokumentierte `@cf/meta/llama-4-scout-17b-16e-instruct` umgestellt. Vision und Bildgenerator bleiben unverändert. Ein erfolgreicher vollständiger neuer KI-Durchlauf steht noch aus; Endpoint bleibt deaktiviert. Fehler nennen jetzt zusätzlich die betroffene Verarbeitungsstufe. 41 Tests bestehen nach der Korrektur.
+
+### MIME-Korrektur
+
+Der echte Browserlauf mit Llama 4 Scout erreichte die Bildgenerierung erfolgreich. Die anschließende lokale Freistellung scheiterte mit `Invalid format: with params: [object Object]`, weil das Base64-Ergebnis als Blob ohne MIME-Typ angelegt wurde. Der Client erkennt nun PNG/JPEG/WebP anhand der Dateisignatur und setzt den MIME-Typ. Bereits gespeicherte ältere KI-Ergebnisse werden vor der Freistellung als PNG normalisiert; so kann der vorhandene Entwurf ohne erneute Cloud-KI-Anfrage fortgesetzt werden. Ein Regressionstest prüft JPEG-Erkennung und die Ablehnung unbekannter Bytes. 42 Tests bestehen.
+
+### Erfolgreiche Wiederaufnahme und kontrollierte Aktivierung
+
+Nach der MIME-Korrektur wurde der vorhandene echte KI-Entwurf im Browser ohne neue Generierung fortgesetzt: IS-Net-Freistellung erfolgreich, automatisch gespeichert, nach Neuladen echte Transparenz bestätigt und Entwurf bereinigt. Zwei erwartete Stücke sind vorhanden (synthetischer Wiederaufnahmetest plus echter Cloud-KI-Durchlauf), kein zusätzlicher Eintrag durch Wiederaufnahme. Der Endpoint wird nun kontrolliert aktiviert. Abschließender frischer Upload auf der Hauptseite steht noch aus; bei Scheitern wird die Konfiguration zurückgenommen.
