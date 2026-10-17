@@ -1,6 +1,15 @@
 # Automatisches Layer Prettify
 
-Implementiert, aber noch nicht mit einem Betreiberkonto verbunden oder gegen echte Modelle getestet. `app/public/ai-config.json` ist absichtlich leer: Solange kein funktionierender Dienst hinterlegt ist, bleibt der bisherige ChatGPT-Import verfügbar. Kein Demo-Ergebnis wird als echte KI-Generierung ausgegeben.
+Implementiert und direkt gegen den öffentlichen Worker getestet; der vollständige Browserablauf und ausreichender Missbrauchsschutz sind noch offen. `app/public/ai-config.json` ist absichtlich leer: Solange kein funktionierender Dienst hinterlegt ist, bleibt der bisherige ChatGPT-Import verfügbar. Kein Demo-Ergebnis wird als echte KI-Generierung ausgegeben.
+
+## Verifizierter Zwischenstand vom 17.10.2026
+
+- Worker-Commit `58d81f240a6e7f595f58425e019f65aaa5081544`: Cloudflare Workers Builds meldet Erfolg. Der öffentliche OPTIONS-Aufruf bestätigt `X-Layer-Worker-Version: diagnostics-20261017-1`.
+- Ein gültiger POST mit einer synthetischen blauen T-Shirt-Referenz lieferte HTTP 200, gültige Metadaten und ein neues, dekodierbares JPEG (1024 × 1024). Das Ergebnis ist kein freigestelltes PNG; Freistellung erfolgt erst im Browser. Visuelle Abweichung: weißer Kragen ergänzt. Noch kein Test mit echtem Kleidungsfoto.
+- Vorherige POSTs lieferten `MODEL_UNAVAILABLE` in `analysis`; der erfolgreiche Test belegt keine dauerhaft fehlerfreie Verfügbarkeit.
+- 38 Tests und Produktions-Build bestanden. Speicherung/Entwürfe sind durch automatisierte Tests geprüft, ein vollständiger automatischer Browserablauf einschließlich echter IS-Net-Freistellung und Wiederladen ist noch nicht nachgewiesen. Der isolierte lokale Server war aus dem Cloud-Browser nicht erreichbar.
+- Fremde Origin liefert HTTP 403. Origin/CORS plus drei Anfragen je Minute/IP/Standort verhindern keinen verteilten Kontingentmissbrauch. Tarif/Tageskontingent sind ohne Betreiberzugriff nicht verifiziert. Öffentliche Aktivierung bleibt ausgesetzt.
+- Vor Aktivierung: serverseitig validierten Turnstile-Schutz mit Betreiberkonfiguration oder gleichwertige Zugriffskontrolle einrichten, anschließend vollständigen Browserablauf mit Wiederaufnahme und gespeichertem KI-Zwischenergebnis testen. Keine weiteren OAuth-Versuche erforderlich; Worker-Änderungen werden über GitHub automatisch deployt.
 
 ## Ablauf
 
