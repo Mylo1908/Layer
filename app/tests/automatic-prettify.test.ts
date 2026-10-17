@@ -40,7 +40,7 @@ test('free-text visual description is formatted before image generation',async()
  let calls=0;
  const response=await worker.fetch(request(),environment(async(model,input)=>{
   calls++;if(calls===1)return {response:'A blue knitted sweater with long sleeves, round neck and ribbed cuffs.'};
-  if(calls===2){assert.equal(model,'@cf/meta/llama-3.1-8b-instruct');assert.equal(input.response_format.type,'json_schema');assert.match(input.messages[1].content,/blue knitted sweater/);return {response:analysis};}
+  if(calls===2){assert.equal(model,'@cf/meta/llama-4-scout-17b-16e-instruct');assert.equal(input.response_format.type,'json_schema');assert.match(input.messages[1].content,/blue knitted sweater/);return {response:analysis};}
   return {image:btoa('generated')};
  }));assert.equal(response.status,200);assert.equal(calls,3);
 });

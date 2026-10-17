@@ -54,3 +54,7 @@ Live-POST gegen `turnstile-20261017-1`: HTTP 503, `TURNSTILE_CONFIG`. Die aktive
 Die synthetische Referenz enthält selbst einen hellgrauen Bogen am Hals. Der zuvor als erfunden bewertete weiße Kragen kann daraus abgeleitet worden sein; mit diesem vereinfachten Testbild ist eine Halluzination deshalb nicht eindeutig nachgewiesen. Ein Echtfoto-Test bleibt offen.
 
 Der echte Turnstile-Client lädt im Browser und zeigt bei Bedarf eine interaktive Menschprüfung. Diese wurde im automatisierten Test nicht gelöst; ein erfolgreicher echter Token ist daher noch nicht nachgewiesen. Die vorgelagerte HTTP-Prüfung des Workers belegt unabhängig davon das fehlende Runtime-Secret und die geschlossene Fehlerbehandlung.
+
+### Modellkorrektur nach echtem Turnstile-Test
+
+Der Betreiber hat die Menschprüfung erfolgreich abgeschlossen. Die Anfrage erreichte danach die KI-Verarbeitung und scheiterte mit `MODEL_UNAVAILABLE`; das Runtime-Secret und die erfolgreiche Siteverify-Prüfung sind damit nachgewiesen. Cloudflares offizielle Modellseite für `llama-3.1-8b-instruct` führt inzwischen zu `?unavailable=llama-3.1-8b-instruct`. Der JSON-Formatierer wurde deshalb auf das aktuell dokumentierte `@cf/meta/llama-4-scout-17b-16e-instruct` umgestellt. Vision und Bildgenerator bleiben unverändert. Ein erfolgreicher vollständiger neuer KI-Durchlauf steht noch aus; Endpoint bleibt deaktiviert. Fehler nennen jetzt zusätzlich die betroffene Verarbeitungsstufe. 41 Tests bestehen nach der Korrektur.
