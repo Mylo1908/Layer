@@ -66,3 +66,9 @@ Der echte Browserlauf mit Llama 4 Scout erreichte die Bildgenerierung erfolgreic
 ### Erfolgreiche Wiederaufnahme und kontrollierte Aktivierung
 
 Nach der MIME-Korrektur wurde der vorhandene echte KI-Entwurf im Browser ohne neue Generierung fortgesetzt: IS-Net-Freistellung erfolgreich, automatisch gespeichert, nach Neuladen echte Transparenz bestätigt und Entwurf bereinigt. Zwei erwartete Stücke sind vorhanden (synthetischer Wiederaufnahmetest plus echter Cloud-KI-Durchlauf), kein zusätzlicher Eintrag durch Wiederaufnahme. Der Endpoint wird nun kontrolliert aktiviert. Abschließender frischer Upload auf der Hauptseite steht noch aus; bei Scheitern wird die Konfiguration zurückgenommen.
+
+### Abschließender frischer End-to-End-Nachweis (17.10.2026)
+
+Nach bestätigter Turnstile-Menschprüfung lief ein vollständig neuer Fotoauftrag auf der veröffentlichten Testseite durch dieselbe AutomaticPhotoEditor-Komponente mit echtem Worker: neue Analyse/Generierung, lokale IS-Net-Freistellung, automatische Speicherung. Nach Neuladen bestätigt der Browser drei erwartete Stücke, echte Transparenz und einen bereinigten Entwurf. Damit ist der zuvor fehlende frische Gesamttest erfolgreich. Die automatische Freigabeprüfung ließ anschließend die Aktivierung auf `main` zu. Beide Endpoint-Konfigurationen sind aktiviert. Es wurde kein kostenpflichtiger Tarif aktiviert.
+
+Ein echtes Kleidungsfoto wurde nicht bereitgestellt; Referenztreue bei komplexen Mustern/Schrift bleibt begrenzt. Der globale gemeinsame Rate-Limit-Bucket wirkt pro Cloudflare-Standort und ersetzt kein strikt weltweites Tagesbudget. Die früheren Blocker in diesem Dokument beschreiben den zeitlichen Verlauf.
