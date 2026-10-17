@@ -1,6 +1,6 @@
-const VERSION='00d672ad9eb0';
+const VERSION='c3be3be965bc';
 const SHELL='layer-shell-'+VERSION,MODELS='layer-models-v1';
-const FILES=["./assets/cutout.worker-qdsiXTPA.js","./assets/main-BeqBM3Sz.js","./assets/ort.wasm.bundle.min--hGdZCrc.js","./assets/ort.wasm.bundle.min-BHusxC6p.mjs","./assets/styles-D5CqnbtC.css","./assets/styles-s_cRQyPh.js","./assets/test-B08abkmy.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./index.html","./licenses/DIS-LICENSE.md","./licenses/IMG_LY_ThirdPartyLicenses.json","./licenses/THIRD_PARTY_LICENSES.txt","./manifest.webmanifest","./pipeline-test.html","./source.zip"];
+const FILES=["./assets/cutout.worker-qdsiXTPA.js","./assets/index-BLo9qQrQ.css","./assets/index-kUZ_OPJL.js","./assets/ort.wasm.bundle.min--hGdZCrc.js","./assets/ort.wasm.bundle.min-BHusxC6p.mjs","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./index.html","./licenses/DIS-LICENSE.md","./licenses/IMG_LY_ThirdPartyLicenses.json","./licenses/THIRD_PARTY_LICENSES.txt","./manifest.webmanifest","./source.zip"];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(SHELL).then(c=>c.addAll(FILES)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('layer-shell-')&&k!==SHELL).map(k=>caches.delete(k)));await self.clients.claim();})());});
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting();});

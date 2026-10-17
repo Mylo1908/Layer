@@ -1,9 +1,10 @@
+import {normalizeGarment,SEASONS,LAYERING} from './garment-details';
 import { openDB, type DBSchema } from 'idb';
 import { CATEGORIES, type Garment, type Outfit, type Backup } from './types';
 interface WardrobeDB extends DBSchema { garments:{key:string;value:Garment}; outfits:{key:string;value:Outfit}; }
 const db = () => openDB<WardrobeDB>('layer-wardrobe',1,{upgrade(d){d.createObjectStore('garments',{keyPath:'id'});d.createObjectStore('outfits',{keyPath:'id'});}});
-export async function getAll(){const d=await db(); return {garments:await d.getAll('garments'),outfits:await d.getAll('outfits')};}
-export async function saveGarment(g:Garment){const d=await db();await d.put('garments',g);}
+export async function getAll(){const d=await db(); return {garments:(await d.getAll('garments')).map(normalizeGarment),outfits:await d.getAll('outfits')};}
+export async function saveGarment(g:Garment){const d=await db();await d.put('garments',normalizeGarment(g));}
 export async function saveOutfit(o:Outfit){const d=await db();await d.put('outfits',o);}
 export async function deleteOutfit(id:string){const d=await db();await d.delete('outfits',id);}
 export async function deleteGarment(id:string){const d=await db();const tx=d.transaction(['garments','outfits'],'readwrite');const outfits=await tx.objectStore('outfits').getAll();for(const o of outfits){o.layers=o.layers.filter(l=>l.garmentId!==id);await tx.objectStore('outfits').put(o);}await tx.objectStore('garments').delete(id);await tx.done;}
@@ -15,8 +16,8 @@ const str=(v:unknown,max=10000)=>typeof v==='string'&&v.length<=max;
 export function validateBackup(data:unknown):Backup {
  if(!data||typeof data!=='object')throw Error('Keine gültige Sicherung.');const b=data as Backup;
  if(b.format!=='layer-wardrobe'||b.version!==1||!Array.isArray(b.garments)||!Array.isArray(b.outfits)||b.garments.length>5000||b.outfits.length>5000)throw Error('Nicht unterstützte Sicherung.');
- const ids=new Set<string>();for(const g of b.garments){if(!g||!str(g.id,100)||ids.has(g.id)||!str(g.name,200)||!CATEGORIES.includes(g.category)||!str(g.color,40)||!str(g.season,40)||!str(g.notes)||typeof g.favorite!=='boolean'||!finite(g.createdAt))throw Error('Fehlerhafte Kleidungsdaten.');ids.add(g.id);dataBlob(g.image);dataBlob(g.original);dataBlob(g.processed);}
+ const ids=new Set<string>();for(const g of b.garments){if(!g||!str(g.id,100)||ids.has(g.id)||!str(g.name,200)||!CATEGORIES.includes(g.category)||!str(g.color,40)||!str(g.season,40)||!str(g.notes)||typeof g.favorite!=='boolean'||!finite(g.createdAt))throw Error('Fehlerhafte Kleidungsdaten.');if(g.seasons!==undefined&&(!Array.isArray(g.seasons)||!g.seasons.length||g.seasons.length>5||g.seasons.some(s=>!SEASONS.includes(s))))throw Error('Ungültige Saison-Auswahl.');if(g.layering!==undefined&&!Object.hasOwn(LAYERING,g.layering))throw Error('Ungültiges Layering.');if(g.userHints!==undefined&&!str(g.userHints,1000)||g.description!==undefined&&!str(g.description,3000))throw Error('Ungültige Kleidungsbeschreibung.');ids.add(g.id);dataBlob(g.image);dataBlob(g.original);dataBlob(g.processed);}
  const outfitIds=new Set<string>();for(const o of b.outfits){if(!o||!str(o.id,100)||outfitIds.has(o.id)||!str(o.name,200)||!str(o.notes)||!/^#[0-9a-f]{6}$/i.test(o.background)||!finite(o.createdAt)||!finite(o.updatedAt)||!Array.isArray(o.layers)||o.layers.length>100)throw Error('Fehlerhafte Outfitdaten.');outfitIds.add(o.id);const layerIds=new Set<string>();for(const l of o.layers){if(!l||!str(l.id,100)||layerIds.has(l.id)||!ids.has(l.garmentId)||![l.x,l.y,l.width,l.rotation].every(finite)||l.width<10||l.width>1200||Math.abs(l.x)>1200||Math.abs(l.y)>1500||Math.abs(l.rotation)>360||typeof l.locked!=='boolean')throw Error('Fehlerhafte Ebenen.');layerIds.add(l.id);}}
  return b;
 }
-export async function importBackup(data:unknown){const b=validateBackup(data);const d=await db();const tx=d.transaction(['garments','outfits'],'readwrite');for(const g of b.garments)await tx.objectStore('garments').put({...g,image:dataBlob(g.image),original:dataBlob(g.original),processed:dataBlob(g.processed)});for(const o of b.outfits)await tx.objectStore('outfits').put(o);await tx.done;return b.garments.length;}
+export async function importBackup(data:unknown){const b=validateBackup(data);const d=await db();const tx=d.transaction(['garments','outfits'],'readwrite');for(const g of b.garments)await tx.objectStore('garments').put(normalizeGarment({...g,image:dataBlob(g.image),original:dataBlob(g.original),processed:dataBlob(g.processed)}));for(const o of b.outfits)await tx.objectStore('outfits').put(o);await tx.done;return b.garments.length;}

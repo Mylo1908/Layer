@@ -1,28 +1,29 @@
 # Layer
 
-Dein lokaler digitaler Kleiderschrank: fotografieren, automatisch mit KI freistellen und Outfits mit mehreren Kleidungsschichten erstellen.
+Dein digitaler Kleiderschrank mit KI-Produktbildern und Outfits aus mehreren Schichten.
 
-**App öffnen:** https://mylo1908.github.io/Layer/
+**App:** https://mylo1908.github.io/Layer/
 
-ChatGPT Prettify ist der Hauptablauf: Foto wählen → Analyseauftrag mit Foto manuell in ChatGPT senden → JSON-Antwort übernehmen → individuellen Bildauftrag im selben Chat senden → neues transparentes KI-PNG importieren und speichern. Neue Stücke lassen sich erst nach dem Ergebnisimport speichern. Name, Kategorie und Farbe werden aus der Analyse vorgeschlagen.
+## Foto → Analyse → Bestätigung
 
-Referenzfoto und Produktbild bleiben getrennt. Der Kleiderschrank und die Outfits nutzen das Produktbild. Entwürfe bleiben lokal in IndexedDB erhalten, auch nach dem Wechsel zu ChatGPT oder Neuladen. Nach Rückkehr „Kleidung hinzufügen“ öffnen.
+1. Ein Kleidungsstück fotografieren oder auswählen.
+2. Optional Hinweise und mehrere passende Saisons ergänzen.
+3. **Nur analysieren** erstellt eine Vorschau, noch kein Produktbild.
+4. Name, Kategorie, Farbe, Beschreibung, Saison und Layering prüfen und bei Bedarf bearbeiten.
+5. Erst **KI-Bild erstellen** startet die neue Bildgenerierung. Layer stellt das Ergebnis lokal frei und speichert es.
 
-Für automatische KI-Neuerstellung sind Client und privater Node-Server vorbereitet; Hosting und API-Zugang müssen noch eingerichtet werden. Fotos werden dann an den eigenen Server und OpenAI übertragen, API-Kosten fallen separat an. Anleitung: [app/server/README.md](app/server/README.md). Die Serveroberfläche ist für den manuellen Hauptablauf ausgeblendet. Ergebnisse bitte auf Abweichungen prüfen.
+Es gibt keine manuellen ChatGPT-, Prompt-, JSON- oder Bildimport-Zwischenschritte. Eine Turnstile-Sicherheitsprüfung schützt Analyse und Generierung. Das Foto ist die Hauptquelle; Zusatzinfos dienen als ergänzender Kontext. Referenztreue ist insbesondere bei Logos, Schrift und feinen Mustern nicht garantiert.
 
-- `app/`: vollständiger React-/TypeScript-Quellcode, Tests, Windows-Anleitungen und Build-Skripte.
-- `models/`: vollständige KI-Modell-/WASM-Dateien am erwarteten App-Pfad.
-- `source.zip`: aktueller herunterladbarer Quellcode.
-- Die vorhandenen `models-Teil-1`/`models-Teil-2`-Ordner bleiben für ältere App-Versionen erhalten.
+Entwürfe, bestätigte Zwischenbilder, Originale und die Sammlung liegen lokal in IndexedDB. Wiederaufnahme erzeugt kein weiteres Bild, wenn bereits eines im Entwurf gespeichert ist. Ältere einwertige Saisonangaben und bestehende Bilder bleiben kompatibel. Backups erhalten neue und alte Metadaten.
 
-Entwicklung: im Ordner `app` mit Node.js LTS `npm ci`, `npm run dev`, `npm test`, `npm run build`. Die Modelle werden aus dem übergeordneten `models`-Ordner übernommen. Der fertige Inhalt von `app/dist` gehört für GitHub Pages ins Repository-Hauptverzeichnis.
+Oberteile können **Layer unten**, **Layer oben**, **Layer unten oder oben** oder **Nicht relevant** sein. Die Outfit-Vorschläge berücksichtigen diese Auswahl und Saison-Mehrfachauswahlen.
 
-Neue Versionen: App und alle Safari-Tabs mit Layer schließen und neu öffnen. Wenn „App aktualisieren“ erscheint, antippen. Die lokal gespeicherte Sammlung wird dadurch nicht gelöscht. Regelmäßig Backups exportieren.
+## Entwicklung und Veröffentlichung
 
-Validierung dieser Änderung: 29 automatisierte Tests inklusive Server-Zugang und Tageslimit mit simuliertem Bildanbieter; TypeScript-/Produktions-Build. Echte API-Bildgenerierung ist noch nicht getestet. Kein Test auf einem echten iPhone; Kamera, Touch und Installation dort beim ersten Gebrauch prüfen.
+`app/` enthält React/TypeScript, Worker und Tests. Mit Node.js LTS: `npm --prefix app ci`, `npm --prefix app test`, `npm --prefix app run build`. Den Inhalt von `app/dist/` ins Repository-Hauptverzeichnis übernehmen. `source.zip` und Service Worker werden beim Build erzeugt. Modell-/WASM-Dateien unter `models/` werden weiterverwendet und nicht verändert.
 
-Projektlizenz: AGPL-3.0-or-later. Drittanbieterhinweise stehen in `licenses` und im Quellcode.
+Worker: `app/cloudflare/worker.ts`. Beide Phasen bleiben durch Turnstile und IP-/gemeinsame Standort-Limits geschützt. Die Bildgenerierung verlangt zusätzlich eine signierte, zum Foto passende Analyse und eine explizite Bestätigung. Das ist kein strikt weltweites Tagesbudget. Kein kostenpflichtiger Dienst wurde aktiviert.
 
-## Automatisches Prettify (vorbereitet)
+Regelmäßig Backups exportieren. „App aktualisieren“ übernimmt neue Versionen ohne die Sammlung zu löschen. Browserdaten löschen oder Gerätewechsel kann lokale Daten entfernen. Kein Test auf einem echten iPhone; Kamera, Touch und Installation dort separat prüfen.
 
-Die automatische Foto → Analyse → Bildgenerierung → Freistellung → Speicherung ist implementiert. Ein Cloudflare-Worker mit Workers-AI-Bindung liegt unter `app/cloudflare/`. Der echte Dienst ist noch nicht verbunden; `ai-config.json` bleibt bis zum Modelltest leer. Die Live-App verwendet solange weiterhin den funktionierenden ChatGPT-Import. Einmaliges Betreiber-Setup, Kontingent und Tests: [app/cloudflare/README.md](app/cloudflare/README.md). Keine API-Schlüssel für Endnutzer erforderlich.
+Lizenz: AGPL-3.0-or-later; Drittanbietertexte unter `licenses/`. Weitere technische Hinweise: [Worker-Dokumentation](app/cloudflare/README.md).

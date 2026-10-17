@@ -1,56 +1,37 @@
 import {useEffect,useRef,useState} from 'react';
-import {Camera,ImagePlus,X,Sparkles} from 'lucide-react';
+import {Camera,ImagePlus,X,Sparkles,Check,Pencil} from 'lucide-react';
 import {normalizePhoto,aiCutout,requireTransparency,cropTransparent} from '../images';
 import {freshTurnstileToken} from '../turnstile';
-import {generateProduct} from '../automatic-prettify';
+import {analyzeProduct,generateProduct} from '../automatic-prettify';
 import {readDraft,writeDraft,deleteDraft,type PhotoDraft} from '../photo-draft';
-import {uid,type Garment} from '../types';
+import {seasonsOf,layeringOf,LAYERING,type Season} from '../garment-details';
+import {GarmentFields,SeasonPicker,type Details} from './GarmentFields';
+import {uid,type Garment,type Category} from '../types';
 import {useModal} from '../modal';
-
+const DRAFT='automatic-new';
+function fresh():PhotoDraft{return {workflowVersion:2,garmentId:uid(),analysisText:'',name:'',category:'T-Shirts',color:'Neutral',season:'Ganzjährig',seasons:['Ganzjährig'],layering:'under',notes:'',description:'',userHints:''};}
 export function AutomaticPhotoEditor({endpoint,onClose,onSave}:{endpoint:string;onClose:()=>void;onSave:(g:Garment)=>Promise<void>}){
- useModal();
- const [ready,setReady]=useState(false),[busy,setBusy]=useState(false),[status,setStatus]=useState(''),[error,setError]=useState(''),[photo,setPhoto]=useState<Blob>(),[preview,setPreview]=useState('');
- const draft=useRef<PhotoDraft|undefined>(undefined),locked=useRef(false),id=useRef<string>(uid()),verification=useRef<HTMLDivElement>(null);
- useEffect(()=>{let active=true;readDraft('automatic-new').then(d=>{if(active){draft.current=d;if(d?.garmentId)id.current=d.garmentId;setPhoto(d?.original);setReady(true);}}).catch(()=>{if(active){setError('Entwurf konnte nicht geladen werden.');setReady(true);}});return()=>{active=false;};},[]);
- useEffect(()=>{if(!photo)return;const u=URL.createObjectURL(photo);setPreview(u);return()=>URL.revokeObjectURL(u);},[photo]);
- async function process(file?:File){
-  if(locked.current)return;locked.current=true;setBusy(true);setError('');
-  try{
-   if(file){
-    setStatus('Foto vorbereiten …');const original=await normalizePhoto(file);id.current=uid();
-    draft.current={original,garmentId:id.current,analysisText:'',name:'',category:'T-Shirts',color:'Neutral',season:'Ganzjährig',notes:''};setPhoto(original);
-    await writeDraft('automatic-new',draft.current);
-   }
-   const d=draft.current;if(!d?.original)throw Error('Bitte zuerst ein Foto wählen.');
-   if(!d.generated||!d.analysis){
-    setStatus('Dein Kleidungsstück wird analysiert und als neues Produktbild erstellt …');
-    const reference=await normalizePhoto(d.original,511);
-    setStatus('Sicherheitsprüfung …');
-    if(!verification.current)throw Error('Sicherheitsprüfung konnte nicht gestartet werden.');
-    const token=await freshTurnstileToken(verification.current);
-    setStatus('Dein Produktbild wird erstellt …');
-    const generated=await generateProduct(endpoint,reference,token);
-    d.generated=generated.image;d.analysis=generated.analysis;d.name=generated.analysis.name;d.category=generated.analysis.category;d.color=generated.analysis.color;
-    await writeDraft('automatic-new',d);
-   }
-   if(!d.result){
-    setStatus('Hintergrund entfernen …');
-    // Normalize persisted images too: older drafts may have an empty MIME type.
-    const cutout=await aiCutout(await normalizePhoto(d.generated),s=>setStatus(`Hintergrund entfernen · ${s}`));
-    await requireTransparency(cutout);d.result=await cropTransparent(cutout);await writeDraft('automatic-new',d);
-   }
-   setStatus('Im Kleiderschrank speichern …');
-   await onSave({id:id.current,name:d.analysis.name,category:d.analysis.category,color:d.analysis.color,season:'Ganzjährig',notes:'',favorite:false,image:d.result,processed:d.result,original:d.original,createdAt:Date.now(),imageSource:'automatic'});
-   await deleteDraft('automatic-new');
-  }catch(e){setError(e instanceof Error?e.message:'Verarbeitung fehlgeschlagen.');setStatus('');}
-  finally{locked.current=false;setBusy(false);}
- }
- return <div className="modal-backdrop"><section className="modal photo-modal" role="dialog" aria-modal="true" aria-label="Automatisches KI-Produktbild"><header className="modal-head"><div><span className="eyebrow">LAYER PRETTIFY</span><h2>Ein Foto. Dein neues Produktbild.</h2></div><button className="icon-button" disabled={busy} onClick={onClose} aria-label="Schließen"><X/></button></header>
- <p>Wähle ein Foto oder fotografiere ein einzelnes Kleidungsstück. Layer analysiert es, entwickelt den Bildauftrag, erstellt ein neues Bild und speichert es ohne Hintergrund in deinem Schrank.</p>
- <p className="micro">Mit der Fotoauswahl sendest du eine verkleinerte Referenz zur KI-Verarbeitung an Cloudflare. Das Original bleibt auf diesem Gerät. KI-Bilder können bei Mustern und Aufdrucken abweichen; du kannst Original und Ergebnis später vergleichen.</p>
- {preview&&<div className="workflow-previews"><figure className="workflow-preview"><figcaption>Dein Referenzfoto</figcaption><div className="checker"><img src={preview} alt="Referenzfoto des Kleidungsstücks"/></div></figure></div>}
- <div className="photo-actions"><label className="button primary"><Camera size={17}/> Fotografieren<input hidden type="file" accept="image/*" capture="environment" disabled={!ready||busy} onChange={e=>{if(e.target.files?.[0])void process(e.target.files[0]);e.target.value='';}}/></label><label className="button secondary"><ImagePlus size={17}/> Foto wählen<input hidden type="file" accept="image/*" disabled={!ready||busy} onChange={e=>{if(e.target.files?.[0])void process(e.target.files[0]);e.target.value='';}}/></label></div>
- <div ref={verification} aria-label="Sicherheitsprüfung"/>{busy&&<p className="status" role="status"><span className="spinner"/>{status}</p>}{busy&&<p className="micro">Das kann einige Minuten dauern. Bitte Layer geöffnet lassen. Beim ersten Mal werden zusätzlich die Dateien zum Freistellen geladen.</p>}
- {error&&<p className="error" role="alert">{error}</p>}{!busy&&photo&&<button className="button primary" onClick={()=>void process()}><Sparkles size={17}/>{error?'Erneut versuchen':'Verarbeitung fortsetzen'}</button>}
- <footer className="modal-foot"><button className="button secondary" disabled={busy} onClick={onClose}>Schließen</button></footer></section></div>;
+ useModal();const [d,S]=useState<PhotoDraft>(()=>fresh()),[ready,R]=useState(false),[busy,B]=useState(false),[status,T]=useState(''),[error,E]=useState(''),[editing,V]=useState(false),[preview,P]=useState('');
+ const current=useRef(d),locked=useRef(false),queue=useRef<Promise<void>>(Promise.resolve()),verification=useRef<HTMLDivElement>(null);
+ useEffect(()=>{let active=true;readDraft(DRAFT).then(saved=>{if(active){if(saved){const next={...fresh(),...saved,garmentId:saved.garmentId??uid(),seasons:seasonsOf(saved),layering:saved.layering??layeringOf({category:saved.category as Category})};current.current=next;S(next);}R(true);}}).catch(()=>{if(active){E('Entwurf konnte nicht geladen werden. Bitte freien Speicher prüfen.');R(true);}});return()=>{active=false;};},[]);
+ useEffect(()=>{if(!d.original){P('');return;}const u=URL.createObjectURL(d.original);P(u);return()=>URL.revokeObjectURL(u);},[d.original]);
+ function commit(next:PhotoDraft){current.current=next;S(next);const pending=queue.current.catch(()=>{}).then(()=>writeDraft(DRAFT,next));queue.current=pending;return pending;}
+ function patch(values:Partial<PhotoDraft>){void commit({...current.current,...values}).catch(()=>E('Dein Entwurf konnte nicht gespeichert werden. Bitte diesen Tab geöffnet lassen.'));}
+ async function run(fn:()=>Promise<void>){if(locked.current)return;locked.current=true;B(true);E('');try{await queue.current;await fn();}catch(e){E(e instanceof Error?e.message:'Verarbeitung fehlgeschlagen. Dein Foto bleibt erhalten.');T('');}finally{locked.current=false;B(false);}}
+ async function close(){if(locked.current)return;B(true);try{await queue.current;onClose();}catch{E('Entwurf konnte nicht gespeichert werden. Bitte diesen Tab geöffnet lassen.');}finally{B(false);}}
+ async function choose(file:File){await run(async()=>{T('Foto vorbereiten …');const original=await normalizePhoto(file);await commit({...fresh(),original,userHints:current.current.userHints??'',seasons:seasonsOf(current.current)});V(false);T('');});}
+ async function token(){if(!endpoint)throw Error('Die KI ist momentan nicht verbunden. Dein Entwurf bleibt erhalten.');if(!verification.current)throw Error('Sicherheitsprüfung nicht bereit.');T('Sicherheitsprüfung …');return freshTurnstileToken(verification.current);}
+ async function analyze(){await run(async()=>{const before=current.current;if(!before.original)throw Error('Bitte zuerst ein Foto wählen.');const reference=await normalizePhoto(before.original,511);const t=await token();T('Kleidungsstück analysieren …');const result=await analyzeProduct(endpoint,reference,t,{userHints:before.userHints??'',seasons:seasonsOf(before)});const a=result.analysis;await commit({...before,workflowVersion:2,reference,analysis:a,ticket:result.ticket,name:a.name,category:a.category,color:a.color,description:a.description,seasons:seasonsOf(before).includes('Ganzjährig')?a.seasons:seasonsOf(before),layering:a.layering,generated:undefined,result:undefined,confirmed:false});V(false);T('Analyse bereit. Prüfe die Angaben vor der Bild-Erstellung.');});}
+ async function generate(){await run(async()=>{let next=current.current;if(!next.original||!next.analysis)throw Error('Bitte zuerst analysieren.');if(!next.name.trim())throw Error('Bitte einen Namen ergänzen.');
+  if(!next.generated){if(!next.ticket)throw Error('Bitte erneut analysieren, bevor du ein KI-Bild erstellst.');const reference=next.reference??await normalizePhoto(next.original,511);const t=await token();T('Bestätigtes KI-Produktbild erstellen …');const generated=await generateProduct(endpoint,reference,t,{ticket:next.ticket,confirmed:true,userHints:next.userHints??'',edits:{name:next.name,category:next.category as Category,color:next.color,description:next.description??'',seasons:seasonsOf(next),layering:next.layering??'none'}});next={...next,generated:generated.image,confirmed:true};await commit(next);}
+  if(!next.result){T('Hintergrund entfernen …');const cutout=await aiCutout(await normalizePhoto(next.generated!),s=>T(`Hintergrund entfernen · ${s}`));await requireTransparency(cutout);next={...next,result:await cropTransparent(cutout)};await commit(next);}
+  T('Im Kleiderschrank speichern …');await onSave({id:next.garmentId!,name:next.name,category:next.category as Category,color:next.color,season:seasonsOf(next)[0],seasons:seasonsOf(next),layering:next.layering??'none',description:next.description??'',userHints:next.userHints??'',notes:next.notes,favorite:false,image:next.result!,processed:next.result!,original:next.original!,createdAt:Date.now(),imageSource:'automatic'});await deleteDraft(DRAFT);
+ });}
+ const details:Details={name:d.name,category:d.category as Category,color:d.color,seasons:seasonsOf(d),layering:d.layering??'none',description:d.description??'',userHints:d.userHints??''};
+ return <div className="modal-backdrop"><section className="modal photo-modal confirmation-modal" role="dialog" aria-modal="true" aria-label="Kleidungsstück analysieren und bestätigen"><header className="modal-head"><div><span className="eyebrow">LAYER PRETTIFY</span><h2>{d.analysis?'Prüfen. Dann erstellen.':'Dein Foto. Deine Hinweise.'}</h2></div><button className="icon-button" disabled={busy} onClick={()=>void close()} aria-label="Schließen"><X/></button></header><div className="confirmation-body"><ol className="workflow-progress" aria-label="Schritte"><li>1 · Foto & Hinweise</li><li aria-current={d.analysis?'step':undefined}>2 · Analyse prüfen</li><li>3 · KI-Bild erstellen</li></ol><p>Das Foto ist die Hauptquelle. Deine Hinweise ergänzen die Analyse. Ein neues Produktbild entsteht erst, wenn du es bestätigst.</p><p className="micro">Für Analyse und Bild-Erstellung wird eine verkleinerte Referenz an Cloudflare gesendet. Das Original und dein Entwurf bleiben auf diesem Gerät. Aufdrucke und feine Details können abweichen.</p>{preview&&<figure className="workflow-preview"><figcaption>Dein Originalfoto</figcaption><div className="checker"><img src={preview} alt="Originalfoto des Kleidungsstücks"/></div></figure>}
+ <div className="photo-actions"><label className="button secondary"><Camera size={17}/> Fotografieren<input hidden type="file" accept="image/*" capture="environment" disabled={!ready||busy} onChange={e=>{if(e.target.files?.[0])void choose(e.target.files[0]);e.target.value='';}}/></label><label className="button secondary"><ImagePlus size={17}/> {d.original?'Anderes Foto wählen':'Foto wählen'}<input hidden type="file" accept="image/*" disabled={!ready||busy} onChange={e=>{if(e.target.files?.[0])void choose(e.target.files[0]);e.target.value='';}}/></label></div>
+ {!d.analysis&&<div className="fields"><label>Zusätzliche Hinweise (optional)<textarea disabled={busy||!ready} maxLength={1000} rows={3} value={d.userHints??''} placeholder="z. B. beiger Strickpullover, weich und locker" onChange={e=>patch({userHints:e.target.value})}/></label><SeasonPicker disabled={busy||!ready} value={seasonsOf(d)} onChange={(seasons:Season[])=>patch({seasons})}/><button className="button primary" disabled={!ready||busy||!d.original||!endpoint} onClick={()=>void analyze()}><Sparkles size={17}/> Nur analysieren</button></div>}
+ {d.analysis&&<section className="analysis-review" aria-label="Analyse-Vorschau"><h3>Analyse-Vorschau</h3>{editing?<><GarmentFields value={details} disabled={busy} onChange={v=>patch(v)}/><button className="button secondary" onClick={()=>V(false)} disabled={busy}><Check size={16}/> Bearbeitung fertig</button></>:<><h4>{d.name}</h4><dl className="review-values"><dt>Kategorie</dt><dd>{d.category}</dd><dt>Farbe</dt><dd>{d.color}</dd><dt>Saison</dt><dd>{seasonsOf(d).join(' · ')}</dd><dt>Layering</dt><dd>{LAYERING[d.layering??'none']}</dd></dl><p>{d.description||d.analysis.imagePrompt}</p>{d.userHints&&<p className="micro">Deine Hinweise: {d.userHints}</p>}{!d.generated&&<button className="button secondary" disabled={busy} onClick={()=>V(true)}><Pencil size={16}/> Bearbeiten</button>}</>}
+ {!d.generated&&<button className="button text" disabled={busy} onClick={()=>void analyze()}>Erneut analysieren</button>}<p className="micro">{d.generated?'Dein KI-Bild ist bereits gespeichert. Die Verarbeitung kann ohne neue Generierung fortgesetzt werden.':'Erst mit „KI-Bild erstellen“ bestätigst du die Angaben und startest die Bildgenerierung.'}</p><button className="button primary" disabled={busy||editing||(!d.generated&&(!d.ticket||!endpoint))} onClick={()=>void generate()}><Sparkles size={17}/>{d.generated?'Verarbeitung fortsetzen':'KI-Bild erstellen'}</button>{!d.generated&&!d.ticket&&<p className="notice">Dieser ältere Entwurf muss zuerst erneut analysiert werden.</p>}</section>}
+ <div ref={verification} aria-label="Sicherheitsprüfung"/>{!endpoint&&ready&&<p className="notice">Die KI ist momentan nicht verbunden. Foto und Hinweise kannst du als Entwurf vorbereiten.</p>}{status&&<p className="status" role="status">{busy&&<span className="spinner"/>}{status}</p>}{error&&<p className="error" role="alert">{error}</p>}</div><footer className="modal-foot"><button className="button secondary" disabled={busy||!ready} onClick={()=>void close()}>Später fortsetzen</button></footer></section></div>;
 }
