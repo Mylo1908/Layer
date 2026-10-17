@@ -8,9 +8,9 @@ export async function loadAutomaticEndpoint():Promise<string>{
  if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)throw Error('Ungültige KI-Konfiguration.');
  return url.href;
 }
-export async function generateProduct(endpoint:string,reference:Blob):Promise<{analysis:Analysis;image:Blob}>{
+export async function generateProduct(endpoint:string,reference:Blob,token:string):Promise<{analysis:Analysis;image:Blob}>{
  let response:Response;
- try{response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'image/png'},body:reference,signal:AbortSignal.timeout(180000),credentials:'omit',redirect:'error'});}catch{throw Error('KI-Verbindung unterbrochen oder Zeitlimit erreicht. Dein Foto bleibt erhalten. Bitte erneut versuchen.');}
+ try{response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'image/png','X-Turnstile-Token':token},body:reference,signal:AbortSignal.timeout(180000),credentials:'omit',redirect:'error'});}catch{throw Error('KI-Verbindung unterbrochen oder Zeitlimit erreicht. Dein Foto bleibt erhalten. Bitte erneut versuchen.');}
  const data=await response.json().catch(()=>null);
  if(!response.ok)throw Error(typeof data?.error==='string'?data.error:'Die KI konnte kein Produktbild erstellen. Bitte später erneut versuchen.');
  if(typeof data?.image!=='string'||!data.image||data.image.length>20_000_000)throw Error('Die KI hat kein Bild geliefert.');
