@@ -35,7 +35,8 @@ export function AutomaticPhotoEditor({endpoint,onClose,onSave}:{endpoint:string;
    }
    if(!d.result){
     setStatus('Hintergrund entfernen …');
-    const cutout=await aiCutout(d.generated,s=>setStatus(`Hintergrund entfernen · ${s}`));
+    // Normalize persisted images too: older drafts may have an empty MIME type.
+    const cutout=await aiCutout(await normalizePhoto(d.generated),s=>setStatus(`Hintergrund entfernen · ${s}`));
     await requireTransparency(cutout);d.result=await cropTransparent(cutout);await writeDraft('automatic-new',d);
    }
    setStatus('Im Kleiderschrank speichern …');

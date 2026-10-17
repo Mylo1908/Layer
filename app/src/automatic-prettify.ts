@@ -16,5 +16,7 @@ export async function generateProduct(endpoint:string,reference:Blob,token:strin
  if(typeof data?.image!=='string'||!data.image||data.image.length>20_000_000)throw Error('Die KI hat kein Bild geliefert.');
  const analysis=parseAnalysis(JSON.stringify(data.analysis));
  let bytes:Uint8Array<ArrayBuffer>;try{bytes=Uint8Array.from(atob(data.image),c=>c.charCodeAt(0));}catch{throw Error('Das KI-Bild konnte nicht geöffnet werden.');}
- return {analysis,image:new Blob([bytes])};
+ const type=bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71?'image/png':bytes[0]===255&&bytes[1]===216&&bytes[2]===255?'image/jpeg':String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP'?'image/webp':'';
+ if(!type)throw Error('Das KI-Bild hat kein unterstütztes Bildformat.');
+ return {analysis,image:new Blob([bytes],{type})};
 }
