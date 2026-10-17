@@ -1,0 +1,7 @@
+import type {PhotoDraft} from './photo-draft';
+import {seasonsOf} from './garment-details';
+import type {Garment,Category} from './types';
+/** Store the new intermediate before cutout, keeping the previous approved-for-review version recoverable. */
+export function generatedDraft(d:PhotoDraft,image:Blob,refine=false):PhotoDraft{return {...d,previousGenerated:refine?d.generated:d.previousGenerated,previousResult:refine?d.result:d.previousResult,generated:image,result:undefined,confirmed:true,reviewStatus:'processing',revision:(d.revision??0)+(refine?1:0)};}
+/** Called only by the explicit final acceptance action, never by generation or draft restoration. */
+export function acceptedGarment(d:PhotoDraft):Garment{if(!d.result||!d.original||!d.garmentId||d.reviewStatus!=='review')throw Error('Bitte zuerst die Bildverarbeitung abschließen.');return {id:d.garmentId,name:d.name,category:d.category as Category,color:d.color,season:seasonsOf(d)[0],seasons:seasonsOf(d),layering:d.layering??'none',description:d.description??'',userHints:d.userHints??'',notes:d.notes,favorite:false,image:d.result,processed:d.result,original:d.original,createdAt:Date.now(),imageSource:'automatic'};}
