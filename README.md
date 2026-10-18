@@ -59,3 +59,11 @@ Material kann vor der Analyse angegeben werden. Farbton und Farbverteilung, weit
 Der FLUX-Auftrag wird aus den aufgelösten Angaben neu erstellt; der ursprüngliche `imagePrompt` wird nicht weiterverwendet. Bei Kategorie-/Farbwechsel entfallen unbestätigte identische Altbeschreibungen und Farb-/Musterdetails, damit alte Anweisungen nicht widersprechen. Unveränderte Referenzdetails bleiben maßgeblich. Feine Streifen, kleine Aufdrucke und Schrift sind modellbedingt nicht garantiert originalgetreu; unsichere Details müssen geprüft werden. HMAC-Fotobindung, Turnstile und Limits bleiben erhalten.
 
 Validierung: 79 automatisierte Tests, einschließlich tatsächlichem FLUX-Multipart-Auftrag, Materialpriorität, Metadaten-/Backup-Rundlauf und bestehenden Sicherheits-, Outfit- und Favoritenprüfungen. Keine zusätzliche Bildgenerierung für diese Änderung.
+
+### Strukturierte Farb- und Musteranalyse
+
+Der Client misst RGB-Farbcluster aus den opaken Pixeln der mittleren 80 % des Referenzfotos. Die Palette enthält Hex-Werte und Häufigkeiten; sie ist keine Segmentierung und kann Hintergrundfarben enthalten. Vision ordnet die Kandidaten Grundfarbe, Streifen, Akzenten und Kleidungsregionen zu. Keine kalibrierten Textilfarben und keine exakten Faseranteile werden behauptet.
+
+`appearance` ergänzt die vorhandene grobe Filterfarbe und ältere Freitextfelder: Grundfarbname/-Hex, zusätzliche und Akzentfarben mit Position, Musterart/-richtung/-rhythmus/-größe/-regionen, Streifenfolge/-breiten/-abstände, Printtext/-position/-größe/-farben, Logo sowie Kragen-, Bündchen- und Nahtdetails. Alle Felder sind optional, validiert, bearbeitbar und werden in Entwürfen, Kleidungsstücken und Backups gespeichert. `measuredPalette` bleibt als Messgrundlage erhalten. Strick wurde als manuelle Materialangabe ergänzt.
+
+Regressionsmaßstab: olivfarbenes Longsleeve mit dünnen cremefarbenen horizontalen Doppelstreifen, breiten oliven Zwischenräumen und einfarbig oliven Kragen/Bündchen. Automatisierte Prüfungen messen ein synthetisches Streifenbild und prüfen die tatsächliche FLUX-Anfrage mit diesem Detailmodell. Sie belegen Datenfluss und Widerspruchsbereinigung, keine verbesserte Bildtreue eines echten generierten Vergleichsbildes. Dafür wurde kein weiterer Live-KI-Aufruf ausgeführt.

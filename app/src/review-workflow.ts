@@ -11,7 +11,20 @@ export function editedReview(original:Analysis,edits:ReviewEdits):Review{
  const description=changedIdentity&&edits.description===originalReview.description?'':edits.description;
  const name=changedIdentity&&edits.name===original.name?`${edits.color} ${edits.category}`:edits.name;
  const resolved={...original,...edits,...visualDetails(edits),name,description};
- for(const field of ['colorDetails','secondaryColors','patternDetails','printDetails'] as const){if(changedIdentity&&edits[field]===original[field])resolved[field]='';}
+ for(const field of ['colorDetails','secondaryColors','patternDetails','printDetails'] as const){if(changedIdentity&&(edits[field]===undefined||edits[field]===original[field]))resolved[field]='';}
+ if(changedIdentity&&(edits.appearance===undefined||JSON.stringify(edits.appearance)===JSON.stringify(original.appearance)))resolved.appearance={};
+ const appearanceChanged=edits.appearance!==undefined&&JSON.stringify(edits.appearance)!==JSON.stringify(original.appearance);
+ const legacyChanged=['colorDetails','secondaryColors','patternDetails','printDetails'].some(k=>(edits as any)[k]!==undefined&&(edits as any)[k]!== (original as any)[k]);
+ if(appearanceChanged){for(const field of ['colorDetails','secondaryColors','patternDetails','printDetails'] as const)if(edits[field]===original[field])resolved[field]='';if(edits.description===originalReview.description)resolved.description='';}
+ if(legacyChanged&&JSON.stringify(edits.appearance)===JSON.stringify(original.appearance))resolved.appearance={};
+ if(resolved.appearance){
+ const a={...resolved.appearance},old=original.appearance??{},edited=edits.appearance??{};
+ const same=(key:keyof typeof a)=>JSON.stringify(a[key])===JSON.stringify(old[key]);
+ const colorChanged=edits.color!==original.color||edited.primaryColorName!==undefined&&edited.primaryColorName!==old.primaryColorName||edited.primaryColorHex!==undefined&&edited.primaryColorHex!==old.primaryColorHex;
+ if(colorChanged)for(const key of ['primaryColorName','primaryColorHex','secondaryColors','accentColors','patternDescription','stripeColorOrder','collarDetails','cuffDetails','seamDetails','printColors'] as const)if(same(key))delete a[key];
+ if(a.patternType==='none')for(const key of ['patternDescription','patternDirection','patternRepeat','patternScale','patternRegions','stripeColorOrder','stripeWidths','stripeSpacing'] as const)delete a[key];
+ resolved.appearance=a;
+ }
  return parseReview({...resolved,imagePrompt:'Resolved confirmed garment data; the generation prompt is rebuilt server-side.'});
 }
 export const base64url=(bytes:Uint8Array)=>btoa(Array.from(bytes,x=>String.fromCharCode(x)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
