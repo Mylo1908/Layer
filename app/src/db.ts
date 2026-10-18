@@ -5,6 +5,7 @@ interface WardrobeDB extends DBSchema { garments:{key:string;value:Garment}; out
 const db = () => openDB<WardrobeDB>('layer-wardrobe',1,{upgrade(d){d.createObjectStore('garments',{keyPath:'id'});d.createObjectStore('outfits',{keyPath:'id'});}});
 export async function getAll(){const d=await db(); return {garments:(await d.getAll('garments')).map(normalizeGarment),outfits:await d.getAll('outfits')};}
 export async function saveGarment(g:Garment){const d=await db();await d.put('garments',normalizeGarment(g));}
+export async function toggleFavorite(id:string){const d=await db();const tx=d.transaction('garments','readwrite');const g=await tx.store.get(id);if(!g)throw Error('Kleidungsstück nicht gefunden.');const favorite=!g.favorite;await tx.store.put({...g,favorite});await tx.done;return favorite;}
 export async function saveOutfit(o:Outfit){const d=await db();await d.put('outfits',o);}
 export async function deleteOutfit(id:string){const d=await db();await d.delete('outfits',id);}
 export async function deleteGarment(id:string){const d=await db();const tx=d.transaction(['garments','outfits'],'readwrite');const outfits=await tx.objectStore('outfits').getAll();for(const o of outfits){o.layers=o.layers.filter(l=>l.garmentId!==id);await tx.objectStore('outfits').put(o);}await tx.objectStore('garments').delete(id);await tx.done;}

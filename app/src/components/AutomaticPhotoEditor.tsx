@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {Camera,ImagePlus,X,Sparkles,Check,Pencil} from 'lucide-react';
-import {normalizePhoto,aiCutout,requireTransparency,cropTransparent} from '../images';
+import {normalizePhoto,aiCutout,requireTransparency,normalizeProduct} from '../images';
 import {freshTurnstileToken} from '../turnstile';
 import {analyzeProduct,generateProduct} from '../automatic-prettify';
 import {readDraft,writeDraft,deleteDraft,type PhotoDraft} from '../photo-draft';
@@ -27,7 +27,7 @@ export function AutomaticPhotoEditor({endpoint,onClose,onSave}:{endpoint:string;
  async function generate(refine=false){await run(async()=>{let next=current.current;if(!next.original||!next.analysis)throw Error('Bitte zuerst analysieren.');if(!next.name.trim())throw Error('Bitte einen Namen ergänzen.');
   if(refine&&!(next.refinement??'').trim())throw Error('Bitte beschreiben, was nachgebessert werden soll.');
   if(!next.generated||refine){if(!next.ticket)throw Error('Bitte erneut analysieren, bevor du ein KI-Bild erstellst.');const reference=next.reference??await normalizePhoto(next.original,511);const t=await token();T('Bestätigtes KI-Produktbild erstellen …');const generated=await generateProduct(endpoint,reference,t,{ticket:next.ticket,confirmed:true,userHints:next.userHints??'',...(refine?{refinement:next.refinement?.trim()}:{}),edits:{name:next.name,category:next.category as Category,color:next.color,description:next.description??'',seasons:seasonsOf(next),layering:next.layering??'none'}});next=generatedDraft(next,generated.image,refine);await commit(next);}
-  if(!next.result){T('Hintergrund entfernen …');const cutout=await aiCutout(await normalizePhoto(next.generated!),s=>T(`Hintergrund entfernen · ${s}`));await requireTransparency(cutout);next={...next,result:await cropTransparent(cutout)};await commit(next);}
+  if(!next.result){T('Hintergrund entfernen …');const cutout=await aiCutout(await normalizePhoto(next.generated!),s=>T(`Hintergrund entfernen · ${s}`));await requireTransparency(cutout);next={...next,result:await normalizeProduct(cutout)};await commit(next);}
   await commit({...next,reviewStatus:'review'});T('Bild prüfen und übernehmen oder nachbessern.');
  });}
  async function accept(){await run(async()=>{const next=current.current;if(!next.result||next.reviewStatus!=='review')throw Error('Bitte zuerst die Bildverarbeitung abschließen.');

@@ -1,3 +1,4 @@
+import {fittedSize} from './garment-poses';
 import { edgeMask } from './logic';
 export async function loadImage(blob:Blob):Promise<HTMLImageElement>{const url=URL.createObjectURL(blob);try{return await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(Error('Dieses Bild konnte nicht geöffnet werden. Bitte JPEG/PNG wählen.'));i.src=url;});}finally{URL.revokeObjectURL(url);}}
 export function toBlob(c:HTMLCanvasElement,type='image/png'):Promise<Blob>{return new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(Error('Bild konnte nicht gespeichert werden.')),type,.9));}
@@ -11,3 +12,5 @@ export async function aiCutout(b:Blob,progress:(s:string)=>void):Promise<Blob>{
 export function download(blob:Blob,name:string){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);}
 
 export async function requireTransparency(b:Blob){const img=await loadImage(b);const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d')!;ctx.drawImage(img,0,0);const d=ctx.getImageData(0,0,c.width,c.height).data;let clear=0,visible=0;for(let i=3;i<d.length;i+=4){if(d[i]<20)clear++;if(d[i]>30)visible++;}if(!visible)throw Error('Das Ergebnis ist vollständig transparent. Bitte ein neues Ergebnis erstellen.');if(clear<d.length/4*.01)throw Error('Dieses Ergebnis hat keinen ausreichend transparenten Hintergrund. Bitte ein echtes transparentes PNG erstellen und als Datei herunterladen, keinen Screenshot.');}
+
+export async function normalizeProduct(b:Blob){const cropped=await cropTransparent(b),img=await loadImage(cropped),c=document.createElement('canvas');const fit=fittedSize(img.width,img.height);c.width=Math.ceil(fit.width)+128;c.height=Math.ceil(fit.height)+128;c.getContext('2d')!.drawImage(img,64,64,fit.width,fit.height);return toBlob(c);}
