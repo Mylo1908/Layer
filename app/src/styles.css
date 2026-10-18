@@ -17,3 +17,6 @@
 .garment-picker .check-label{white-space:normal;min-width:0;line-height:1.45}.garment-picker input[type=checkbox]{flex-shrink:0;width:14px;height:14px}
 
 @media(min-width:901px){.editor-modal{max-width:1140px}.editor-layout{grid-template-columns:minmax(0,1fr) 380px}}.outfit-suggestions [aria-label="Sicherheitsprüfung für Outfit"]{max-width:100%;overflow-x:auto}
+
+/* Collages reuse the outfit interaction surface at a portrait 2:3 ratio. */
+.collage-stage,.collage-preview{aspect-ratio:2/3!important}.collage-toolbar{display:flex;align-items:center;gap:14px;padding:12px 24px;flex-wrap:wrap;border-bottom:1px solid var(--line,#e4e1d8)}.collage-toolbar label{display:flex;align-items:center;gap:8px}.collages-section{margin-top:40px}.missing-collage{position:absolute;left:10px;bottom:10px;background:#fff9;padding:6px;font-size:12px}.collage-preview{position:relative;overflow:hidden}.image-comparison img{max-width:100%;max-height:300px;object-fit:contain}.palette-row{display:flex;gap:8px;flex-wrap:wrap}@media(max-width:700px){.collage-toolbar{padding:12px;gap:8px}.page-heading{flex-wrap:wrap;gap:10px}.collage-stage{max-height:none}.collage-toolbar .button{font-size:12px}}
