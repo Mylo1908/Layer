@@ -1,0 +1,5 @@
+export const MATERIALS=['Nicht angegeben','Baumwolle','Polyester','Wolle','Merinowolle','Kaschmir','Leinen','Denim','Viskose','Seide','Leder','Kunstleder','Mischgewebe','Sonstiges'] as const;
+export const VISUAL_FIELDS=['colorDetails','secondaryColors','patternDetails','printDetails','material','materialDetails','uncertainties'] as const;
+export type VisualDetails=Partial<Record<typeof VISUAL_FIELDS[number],string>>;
+export function visualDetails(value:unknown):VisualDetails{const v=value as Record<string,unknown>;const result:VisualDetails={};for(const k of VISUAL_FIELDS){const x=v?.[k];if(x!==undefined){if(typeof x!=='string'||x.length>1500)throw Error('Ungültige Kleidungsdetails.');result[k]=x.trim();}}if(result.material&&!MATERIALS.includes(result.material as any))throw Error('Ungültiges Material.');return result;}
+export function suppliedMaterial(value:VisualDetails):VisualDetails{return value.material&&value.material!=='Nicht angegeben'?{material:value.material,materialDetails:value.materialDetails??''}:{};}

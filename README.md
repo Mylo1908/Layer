@@ -51,3 +51,11 @@ Validierung: 73 automatisierte Tests, TypeScript für Frontend und Worker sowie 
 Der erste echte Text-KI-Test passierte die Turnstile-Prüfung, lieferte aber keinen gültigen Vorschlag. Die Modellantwort wird nun auf kurze serverseitige Auswahlkennungen und ein JSON-Schema begrenzt; echte Kleidungs-IDs bleiben nur in der serverseitigen Zuordnung. Modellzugriff, Antwortformat und Auswahlfehler werden mit festen, geheimnisfreien Fehlerkategorien getrennt. Die lokale Rückfalllösung bleibt erhalten. Ein erneuter gezielter Live-Test dieser Korrektur steht noch aus.
 
 Die Live-Diagnose bestätigt: Modellaufruf und JSON-Format funktionieren, die freie Zusammenstellung einzelner IDs erfüllte jedoch die Outfitregeln nicht zuverlässig. Deshalb werden vollständige Kombinationen jetzt vorab regelbasiert geprüft. Die Text-KI wählt nur noch eine erlaubte Option aus diesem begrenzten Menü; deren echte Kleidungs-IDs werden danach nochmals geprüft. Dasselbe Menü verbessert den lokalen Vorschlag. Ein gezielter Live-Test dieser Auswahl steht noch aus.
+
+### Präzise Kleidungsdetails
+
+Material kann vor der Analyse angegeben werden. Farbton und Farbverteilung, weitere Farben, Muster/Streifen, Aufdrucke und Unsicherheiten sind in der Vorschau bearbeitbar und bleiben in Entwürfen, Kleidungsstücken und Backups erhalten. Explizite Hinweise werden getrennt extrahiert und serverseitig über erkannte Vermutungen gelegt; Material und Saison werden direkt aus den Eingaben übernommen. Bestätigte Korrekturen haben anschließend Vorrang.
+
+Der FLUX-Auftrag wird aus den aufgelösten Angaben neu erstellt; der ursprüngliche `imagePrompt` wird nicht weiterverwendet. Bei Kategorie-/Farbwechsel entfallen unbestätigte identische Altbeschreibungen und Farb-/Musterdetails, damit alte Anweisungen nicht widersprechen. Unveränderte Referenzdetails bleiben maßgeblich. Feine Streifen, kleine Aufdrucke und Schrift sind modellbedingt nicht garantiert originalgetreu; unsichere Details müssen geprüft werden. HMAC-Fotobindung, Turnstile und Limits bleiben erhalten.
+
+Validierung: 79 automatisierte Tests, einschließlich tatsächlichem FLUX-Multipart-Auftrag, Materialpriorität, Metadaten-/Backup-Rundlauf und bestehenden Sicherheits-, Outfit- und Favoritenprüfungen. Keine zusätzliche Bildgenerierung für diese Änderung.
