@@ -42,7 +42,7 @@ Describe garment type, cut, length, sleeves, neckline, exact colors, texture, se
 export default {
  async fetch(request:Request,env:Env):Promise<Response>{
   const origin=request.headers.get('Origin');
-  const headers={'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':env.ALLOWED_ORIGIN,'Vary':'Origin','X-Layer-Worker-Version':'outfit-v4-20261018','X-Layer-Protocol':'review-v2','X-Layer-Features':'refinement-v1, outfit-v1, poses-v1','Access-Control-Expose-Headers':'X-Layer-Protocol, X-Layer-Worker-Version, X-Layer-Features'};
+  const headers={'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':env.ALLOWED_ORIGIN,'Vary':'Origin','X-Layer-Worker-Version':'outfit-v4-20261018-json','X-Layer-Protocol':'review-v2','X-Layer-Features':'refinement-v1, outfit-v1, poses-v1','Access-Control-Expose-Headers':'X-Layer-Protocol, X-Layer-Worker-Version, X-Layer-Features'};
   const reply=(body:unknown,status=200)=>Response.json(body,{status,headers});
   if(origin!==env.ALLOWED_ORIGIN)return new Response('Forbidden',{status:403});
   if(!['/prettify','/outfit'].includes(new URL(request.url).pathname))return reply({error:'Nicht gefunden.'},404);
