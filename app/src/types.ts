@@ -5,5 +5,5 @@ export type Garment = import('./visual-details').VisualDetails & import('./photo
 export type Layer = {id:string; garmentId:string; x:number; y:number; width:number; rotation:number; locked:boolean};
 export type Outfit = {id:string; name:string; layers:Layer[]; background:string; notes:string; createdAt:number; updatedAt:number};
 export type Collage=Outfit & {template:import('./collage').CollageTemplate;variant?:number;outfitId?:string};
-export type Backup = {format:'layer-wardrobe'; version:1; garments:Array<Omit<Garment,'image'|'original'|'processed'|'photos'> & {image:string; original:string; processed:string;photos?:Array<Omit<import('./photos').GarmentPhoto,'image'|'source'>&{image:string;source?:string}>}>; outfits:Outfit[];collages?:Collage[]};
+export type Backup = {format:'layer-wardrobe'; version:1; garments:Array<Omit<Garment,'image'|'original'|'processed'|'photos'> & {image:string; original:string; processed:string;photos?:Array<Omit<import('./photos').GarmentPhoto,'image'|'source'>&{image:string;source?:string}>}>; outfits:Outfit[];collages?:Collage[];calendarEntries?:import('./calendar').OutfitCalendarEntry[]};
 export const uid = () => crypto.randomUUID();

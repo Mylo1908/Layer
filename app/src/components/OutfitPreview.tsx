@@ -1,0 +1,2 @@
+import type {Outfit} from '../types';
+export function OutfitPreview({outfit,images}:{outfit:Pick<Outfit,'layers'|'background'>;images:Record<string,string>}){return <div className="outfit-preview" style={{background:outfit.background}}>{outfit.layers.filter(l=>images[l.garmentId]).map(l=><img key={l.id} src={images[l.garmentId]} alt="" style={{left:`${l.x/6}%`,top:`${l.y/7.5}%`,width:`${l.width/6}%`,transform:`translate(-50%,-50%) rotate(${l.rotation}deg)`}}/>)}</div>;}

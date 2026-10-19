@@ -1,8 +1,18 @@
-# Layer 1.1
+# Layer 1.2
 
 Dein digitaler Kleiderschrank mit KI-Produktbildern und Outfits aus mehreren Schichten.
 
 **App:** https://mylo1908.github.io/Layer/
+
+## Layer 1.2: Outfit-Kalender
+
+Monats- und Wochenansicht beginnen am Montag und verwenden lokale Kalendertage. Gespeicherte Outfits lassen sich mehrfach pro Tag planen, mit Anlass und Notiz versehen, ändern und verschieben. **Heute tragen** am gespeicherten Outfit aktualisiert nach ausdrücklicher Bestätigung den heutigen Eintrag. Geplant ist nicht automatisch getragen; Markierungen sind rückgängig zu machen.
+
+Schema 2 wird auf 3 erweitert, ausschließlich um `calendarEntries`. Historische Namen, Kleidungsstück-IDs, lokales Datum, Status und Zeitstempel bleiben auch nach Löschen des Originals erhalten. Ebenen und Hintergrund dienen als Vorschau, fehlende Referenzen werden angezeigt. Änderungen am Original verändern nicht rückwirkend die historischen Daten. Bilder werden nicht zusätzlich kopiert.
+
+Backups bleiben Formatversion 1 mit optionalem `calendarEntries`. Alte Backups löschen keine vorhandenen Kalendereinträge. Datum, Status, Struktur und doppelte IDs werden vor der gemeinsamen Importtransaktion geprüft. Gleiche IDs werden wie bisher durch die Backup-Version ersetzt, andere Einträge bleiben bestehen. Der Kalender funktioniert lokal und offline ohne externe Kalenderdienste oder KI.
+
+Validierung 1.2: 112 automatisierte Tests und Produktionsbuild erfolgreich, einschließlich v2-Migration mit erhaltenen Bildern/Outfits/Collagen, Mehrfacheinträgen, parallelem Heute-tragen, Statuswechsel, Wiederaufnahme, Referenzerhalt, alten/neuen Backups und Schaltjahr-/Zeitzonenlogik.
 
 ## Layer 1.1: lokaler Import und Collagen
 
