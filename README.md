@@ -1,8 +1,20 @@
-# Layer 1.2
+# Layer 1.3
 
 Dein digitaler Kleiderschrank mit KI-Produktbildern und Outfits aus mehreren Schichten.
 
 **App:** https://mylo1908.github.io/Layer/
+
+## Layer 1.3: Wardrobe Insights
+
+**Statistik** zeigt dokumentierte Tragetage, meist-/selten erfasste Kleidung, lange nicht dokumentierte Nutzung, Farb- und Kategorieverteilung sowie monatliche Outfit-Trageeinträge. Ein Kleidungsstück zählt höchstens einmal pro lokalem Kalendertag; nur `worn` zählt. Bestehende Kalenderdaten bleiben die einzige Historie. Zeitraum (einschließlich eigener Datumsgrenzen), Kategorie und Jahr sind filterbar. „Noch kein Tragen erfasst“ beschreibt fehlende Dokumentation, keine Aussage über tatsächliches früheres Tragen.
+
+Bestandskennzahlen beziehen sich auf aktuelle Stücke der gewählten Kategorie. Outfit-Trageeinträge können bei „Alle“ auch inzwischen entfernte Stücke enthalten. Farb- und Kategoriediagramme zeigen ausdrücklich den gesamten aktuellen Bestand, unabhängig von den Filtern. Monatswerte unterscheiden Outfit-Einträge, unterschiedliche Kalendertage und unterschiedliche aktuelle Stücke; Monate ohne passende Einträge bleiben 0.
+
+Kaufpreis und Kaufdatum sind optional, nachträglich bearbeitbar und bleiben lokal. Preise werden als ganze Cent gespeichert; deutsche Dezimalbeträge, 0 € und fehlende Angaben werden unterschieden (Obergrenze 1.000.000 €). Cost-per-Wear verwendet immer sämtliche dokumentierten Tragetage eines Stücks, auch bei eingeschränktem Dashboard-Zeitraum. Ohne Preis oder dokumentiertes Tragen ist der Wert nicht verfügbar. Der bekannte Kaufwert zählt nur tatsächlich angegebene Preise.
+
+IndexedDB bleibt Schema 3; Backupformat bleibt Version 1. Die optionalen Kaufangaben werden vor dem Import validiert. Bilder, Outfits, Collagen und Kalenderhistorie bleiben erhalten. Die Statistik führt keine KI-, Analyse- oder sonstigen externen Datenaufrufe aus. Für kleine Bildschirme ersetzt der Statistik-Navigationspunkt die zusätzliche Plus-Schaltfläche unten; Kleidung hinzufügen bleibt im Kleiderschrank erreichbar.
+
+Validierung: 124 Tests einschließlich Tragetag-Deduplizierung, Filter, unbekannte Farben, Monats-/Jahreswechsel, Preis-/Cost-per-Wear-Regeln, Datenerhalt und alten/neuen Backups. `insights-check.html` ist eine reproduzierbare Browser-Testseite mit synthetischen Bildern und getrennten IndexedDB-Namen; sie verändert keine echten Nutzerdaten. Produktionsoberfläche und Testseite verwenden denselben App-Code.
 
 ## Layer 1.2: Outfit-Kalender
 
