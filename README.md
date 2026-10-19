@@ -1,8 +1,20 @@
-# Layer
+# Layer 1.1
 
 Dein digitaler Kleiderschrank mit KI-Produktbildern und Outfits aus mehreren Schichten.
 
 **App:** https://mylo1908.github.io/Layer/
+
+## Layer 1.1: lokaler Import und Collagen
+
+**Kleidung hinzufügen** öffnet jetzt den schnellen lokalen Import: Kamera oder Datei wählen, optional freistellen, Name und Kategorie prüfen, übernehmen. Dateinamen liefern Vorschläge; Farbe, Saison und Beschreibung sind optional. Der ausführliche KI-Workflow bleibt als Alternative verfügbar.
+
+Pro Stück sind ein Hauptfoto und drei zusätzliche Perspektiven möglich. Miniaturen lassen sich vergrößern, beschriften, entfernen und ausdrücklich zum Hauptfoto machen. Zusatzfotos sind keine separaten Kleidungsstücke. Neue Galerieaufnahmen werden bei Bedarf auf maximal 2000 Pixel und 4 MB begrenzt; geeignete PNG/JPEG/WebP-Dateien bleiben unverändert. Vorhandene Originale bleiben erhalten. Import- und Bearbeitungsentwürfe werden lokal gespeichert; alte Backups und Datensätze benötigen keine Schemaänderung. Neue Backups enthalten Galerie und Fotoquellen.
+
+Die drei Collage-Vorlagen gewichten Hauptkleidung, Schuhe und Accessoire-Untertypen. Motivgrenzen, Seitenverhältnisse und begrenzte Kollisionskorrektur verhindern Verzerrungen und unnötige Überlappungen. Sechs reproduzierbare Varianten sind über **Neu anordnen** erreichbar. Rückgängig/Wiederholen erhält die vorherige Anordnung. Kleine Touch-Ziele, Schnellregler für Größe/Drehung/Ebene und Randbegrenzung erleichtern die mobile Bearbeitung. Der PNG-Export bleibt 1200 × 1800 Pixel und wird aus denselben Motiven und Positionen erzeugt.
+
+**Mehrfoto-KI: Plan C.** Die vorhandene Analyse verwendet weiterhin genau ein Referenzbild; Zusatzfotos bleiben lokal sichtbar und werden nicht heimlich zusätzlich ausgewertet. Keine neue generative Bildfunktion und keine zusätzlichen KI-Anfragen. Modell-Schnittstelle: https://developers.cloudflare.com/workers-ai/models/llama-3.2-11b-vision-instruct/
+
+Validierung: 102 automatisierte Tests einschließlich Galerie-/Backup-Rundlauf, Entwurfswiederaufnahme, Layoutvarianten, Motivproportionen, Rand-/Kollisionsprüfung und Gestenmathematik. Browserprüfungen sind davon getrennt; ein echter iPhone/Safari-Hardwaretest ist hier nicht verfügbar.
 
 ## Foto → Analyse → Bestätigung
 
