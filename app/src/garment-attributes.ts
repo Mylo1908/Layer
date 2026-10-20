@@ -1,0 +1,4 @@
+import {validAccessory,type AccessoryType} from './accessories';
+export const ATTRIBUTE_FIELDS=['brand','subcategory','fit','cut'] as const;
+export type GarmentAttributes=Partial<Record<typeof ATTRIBUTE_FIELDS[number],string>> & {accessoryType?:AccessoryType};
+export function garmentAttributes(value:unknown):GarmentAttributes{if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Ungültige Kleidungsattribute.');const v=value as Record<string,unknown>,out:GarmentAttributes={};for(const k of ATTRIBUTE_FIELDS)if(v[k]!==undefined){if(typeof v[k]!=='string'||v[k].length>200)throw Error('Ungültiges Kleidungsattribut.');out[k]=v[k].trim();}if(v.accessoryType!==undefined){if(!validAccessory(v.accessoryType))throw Error('Ungültiger Accessoire-Typ.');out.accessoryType=v.accessoryType as AccessoryType;}return out;}

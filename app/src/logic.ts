@@ -7,7 +7,7 @@ export function proposeLayers(gs:Garment[],layering:boolean):Layer[]{
  const upper=(g:Garment)=>['T-Shirts','Longsleeves','Pullover','Hemden','Jacken'].includes(g.category);
  const base=pick(gs.filter(g=>layering?upper(g)&&['under','either'].includes(layeringOf(g)):['T-Shirts','Longsleeves','Pullover','Hemden','Kleider'].includes(g.category)));
  const layers:Layer[]=[];if(base){const l=defaultLayer(base);if(layering){l.y=245;l.width=310;}layers.push(l);}
- const bottom=pick(gs.filter(g=>['Hosen','Röcke'].includes(g.category)));if(bottom)layers.unshift(defaultLayer(bottom));
+ const bottom=base?.category==='Kleider'?undefined:pick(gs.filter(g=>['Hosen','Röcke'].includes(g.category)));if(bottom)layers.unshift(defaultLayer(bottom));
  if(layering){const top=pick(gs.filter(g=>upper(g)&&g.id!==base?.id&&['over','either'].includes(layeringOf(g))));if(top)layers.push(defaultLayer(top));}
  const shoes=pick(gs.filter(g=>g.category==='Schuhe'));if(shoes)layers.push(defaultLayer(shoes));return layers;
 }

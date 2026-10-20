@@ -1,3 +1,5 @@
+> Historisches Dokument vor Layer 1.4. Aktuell sind README.md und AUDIT_1.4.md; frühere Generierungsabläufe sind stillgelegt.
+
 # Analyse des verlinkten REA-Projekts
 
 Referenz: <https://github.com/morluto/rea>, geprüft am 14.10.2026.

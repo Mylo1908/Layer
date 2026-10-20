@@ -1,6 +1,6 @@
 import {removeBackground} from '@imgly/background-removal';
 import {readResources} from './model-resources';
-import {cleanAlpha} from './alpha-cleanup';
+import {cleanAlpha,applyPhotoAlpha} from './alpha-cleanup';
 // The whole inference runs off the UI thread; photos never leave the browser.
 self.onmessage=async(event:MessageEvent<{image:Blob;publicPath:string}>)=>{
  try {
@@ -14,7 +14,7 @@ self.onmessage=async(event:MessageEvent<{image:Blob;publicPath:string}>)=>{
   self.postMessage({progress:'Kanten säubern und Freistellung fertigstellen …'});
   const full=await createImageBitmap(blob),canvas=new OffscreenCanvas(full.width,full.height),context=canvas.getContext('2d')!;
   context.drawImage(full,0,0);full.close();const mask=context.getImageData(0,0,canvas.width,canvas.height);
-  mask.data.set(cleanAlpha(mask.data,canvas.width,canvas.height));context.putImageData(mask,0,0);
+  const source=await createImageBitmap(event.data.image);context.clearRect(0,0,canvas.width,canvas.height);context.drawImage(source,0,0,canvas.width,canvas.height);source.close();const original=context.getImageData(0,0,canvas.width,canvas.height);original.data.set(applyPhotoAlpha(original.data,cleanAlpha(mask.data,canvas.width,canvas.height)));context.putImageData(original,0,0);
   self.postMessage({blob:await canvas.convertToBlob({type:'image/png'})});
  }
  catch(e){self.postMessage({error:e instanceof Error?e.message:String(e)});}

@@ -1,6 +1,6 @@
-const VERSION='__VERSION__';
+const VERSION='06fef4ebaccb';
 const SHELL='layer-shell-'+VERSION,MODELS='layer-models-v1';
-const FILES=/*__PRECACHE__*/[];
+const FILES=["./assets/cutout.worker-ed7Tt55s.js","./assets/images-rIneM29i.js","./assets/index-DacFa18r.js","./assets/insights-check-inner-ZW4nUStZ.js","./assets/ort.wasm.bundle.min-BHusxC6p.mjs","./assets/ort.wasm.bundle.min-CW3a5ZwK.js","./assets/styles-Bz1NgOim.css","./assets/styles-D6yPajh2.js","./icons/apple-touch-icon.png","./icons/icon-192.png","./icons/icon-512.png","./index.html","./insights-check-inner.html","./insights-check.html","./licenses/DIS-LICENSE.md","./licenses/IMG_LY_ThirdPartyLicenses.json","./licenses/THIRD_PARTY_LICENSES.txt","./manifest.webmanifest","./source.zip"];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(SHELL).then(c=>c.addAll(FILES)));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('layer-shell-')&&k!==SHELL).map(k=>caches.delete(k)));await self.clients.claim();})());});
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting();});
