@@ -1,7 +1,9 @@
 import {parseReview,type Review} from './review-workflow';
 import type {Season} from './garment-details';
 export async function loadAutomaticEndpoint():Promise<string>{
- const res=await fetch(new URL('ai-config.json',new URL(import.meta.env.BASE_URL,document.baseURI)),{cache:'no-store',signal:AbortSignal.timeout(8000)});
+ const offline='Du bist offline. Die Cloud-KI benötigt eine Internetverbindung.';
+ if(globalThis.navigator?.onLine===false)throw Error(offline);
+ const res=await fetch(new URL('ai-config.json',new URL(import.meta.env.BASE_URL,document.baseURI)),{cache:'no-store',signal:AbortSignal.timeout(8000)}).catch(()=>{throw Error(globalThis.navigator?.onLine===false?offline:'KI-Konfiguration konnte nicht geladen werden. Bitte prüfe deine Internetverbindung.');});
  if(!res.ok)throw Error('KI-Konfiguration konnte nicht geladen werden.');const {endpoint}=await res.json();if(!endpoint)return '';
  const url=new URL(endpoint);if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash)throw Error('Ungültige KI-Konfiguration.');return url.href;
 }
